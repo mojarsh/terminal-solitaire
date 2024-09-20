@@ -1,3 +1,6 @@
+CARD_BACK = "\u2587"
+
+
 class Board:
     def __init__(self, columns: int, rows: int):
         self.columns = columns
@@ -37,3 +40,15 @@ class Board:
                     print(v, end=" ")
             print("|\r")
         print("+ -------------------- +")
+
+
+def assign_tableau_display_icon(original_tableau: list[list], board: Board) -> None:
+    for row in original_tableau:
+        row_index = original_tableau.index(row)
+        for idx, val in enumerate(row):
+            if idx == 0:
+                display = val
+            else:
+                display = 2 * CARD_BACK
+
+            board.tableau[(idx + row_index, row_index)] = display
