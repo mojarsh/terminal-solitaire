@@ -15,3 +15,7 @@ class Deck:
         deck = self.build()
         random.shuffle(deck)
         return deck
+
+
+def deal(deck: list, number_of_cards: int) -> list:
+    return [deck.pop() for _ in range(number_of_cards)]
