@@ -25,21 +25,22 @@ class Board:
         return foundations
 
     def draw_board(self) -> None:
-        print("+ -------------------- +")
+        print("\n    00 01 02 03 04 05 06  ")
+        print("  + -------------------- +")
         for i in range(1):
-            print("|", end=" ")
+            print("  |", end=" ")
             for k, v in self.foundations.items():
                 if k[1] == i:
                     print(v, end=" ")
             print("|\r")
-        print("+ -------------------- +")
+        print("  + -------------------- +")
         for i in range(self.rows):
-            print("|", end=" ")
+            print(f"{i:02}|", end=" ")
             for k, v in self.tableau.items():
                 if k[1] == i:
                     print(v, end=" ")
             print("|\r")
-        print("+ -------------------- +")
+        print("  + -------------------- +")
 
 
 def assign_tableau_display_icon(original_tableau: list[list], board: Board) -> None:

@@ -8,6 +8,25 @@ def generate_original_tableau(deck: Deck, board: Board) -> list[list]:
     ]
 
 
-def move_card(board: Board, tableau: list[list], row_index: int, column_index: int):
-    selected_card = tableau[row_index].pop(column_index)
-    board.tableau[(column_index, row_index)] = selected_card
+def select_card_on_board(board: Board, row_index: int, column_index: int) -> str:
+    return board.tableau[(column_index, row_index)]
+
+
+def remove_card_on_board(board: Board, row_index: int, column_index: int) -> None:
+    board.tableau[(column_index, row_index)] = "  "
+
+
+def place_card_on_board(
+    card: str, board: Board, row_index: int, column_index: int
+) -> None:
+    board.tableau[(column_index, row_index)] = card
+
+
+def reveal_card_on_board(
+    board: Board, original_tableau: list[list], row_index: int, column_index: int
+) -> None:
+    # Column index offset by 2 when mapping to original tableau, as there are no empyt placeholders at start of list
+    if row_index != 0:
+        board.tableau[(column_index, row_index - 1)] = original_tableau[row_index][
+            column_index - 2
+        ]
