@@ -1,5 +1,13 @@
 import itertools
 import random
+from dataclasses import dataclass
+
+
+@dataclass
+class Card:
+    suit: str
+    value: str
+    colour: str
 
 
 class Deck:
@@ -8,8 +16,14 @@ class Deck:
         self.suits = suits
 
     def build(self) -> list:
-        combinations = list(itertools.product(self.values, self.suits))
-        return [suit + value for suit, value in combinations]
+        list(itertools.product(self.suits, self.values))
+        deck = []
+        for suit, value in list(itertools.product(self.suits, self.values)):
+            colour = set_card_colour(suit)
+            card = Card(suit, value, colour)
+            deck.append(card)
+
+        return deck
 
     def shuffle(self) -> list:
         deck = self.build()
@@ -19,3 +33,10 @@ class Deck:
 
 def deal(deck: list, number_of_cards: int) -> list:
     return [deck.pop() for _ in range(number_of_cards)]
+
+
+def set_card_colour(suit: str) -> str:
+    if suit in ("\u2661", "\u2662"):
+        return "Red"
+    else:
+        return "Black"

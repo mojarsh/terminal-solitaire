@@ -1,3 +1,5 @@
+from terminal_solitaire.deck import Card
+
 CARD_BACK = "\u2587"
 
 
@@ -43,12 +45,14 @@ class Board:
         print("  + -------------------- +")
 
 
-def assign_tableau_display_icon(original_tableau: list[list], board: Board) -> None:
+def assign_tableau_display_icon(
+    original_tableau: list[list[Card]], board: Board
+) -> None:
     for row in original_tableau:
         row_index = original_tableau.index(row)
-        for idx, val in enumerate(row):
+        for idx, card in enumerate(row):
             if idx == 0:
-                display = val
+                display = card.value + card.suit
             else:
                 display = 2 * CARD_BACK
 

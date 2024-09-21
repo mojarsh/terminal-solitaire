@@ -1,4 +1,4 @@
-from terminal_solitaire.deck import Deck, deal
+from terminal_solitaire.deck import Card, Deck, deal
 from terminal_solitaire.game_board import Board
 
 
@@ -23,10 +23,10 @@ def place_card_on_board(
 
 
 def reveal_card_on_board(
-    board: Board, original_tableau: list[list], row_index: int, column_index: int
+    board: Board, original_tableau: list[list[Card]], row_index: int, column_index: int
 ) -> None:
     # Column index offset by 2 when mapping to original tableau, as there are no empyt placeholders at start of list
     if row_index != 0:
-        board.tableau[(column_index, row_index - 1)] = original_tableau[row_index][
-            column_index - 2
-        ]
+        card = original_tableau[row_index][column_index - 2]
+        display = card.value + card.suit
+        board.tableau[(column_index, row_index - 1)] = display
