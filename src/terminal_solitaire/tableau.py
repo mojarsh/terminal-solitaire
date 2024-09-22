@@ -1,11 +1,9 @@
-from terminal_solitaire.deck import Card, Deck, deal
+from terminal_solitaire.deck import Card, Deck
 from terminal_solitaire.game_board import Board
 
 
 def generate_original_tableau(deck: Deck, board: Board) -> list[list]:
-    return [
-        deal(deck=deck, number_of_cards=board.columns - i) for i in range(board.columns)
-    ]
+    return [deck.deal(number_of_cards=board.columns - i) for i in range(board.columns)]
 
 
 def select_card_on_board(board: Board, row_index: int, column_index: int) -> str:
@@ -28,5 +26,5 @@ def reveal_card_on_board(
     # Column index offset by 2 when mapping to original tableau, as there are no empyt placeholders at start of list
     if row_index != 0:
         card = original_tableau[row_index][column_index - 2]
-        display = card.value + card.suit
-        board.tableau[(column_index, row_index - 1)] = display
+        setattr(card, "display_status", True)
+        board.tableau[(column_index, row_index - 1)] = card.display_value

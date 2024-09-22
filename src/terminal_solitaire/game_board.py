@@ -52,8 +52,6 @@ def assign_tableau_display_icon(
         row_index = original_tableau.index(row)
         for idx, card in enumerate(row):
             if idx == 0:
-                display = card.value + card.suit
-            else:
-                display = 2 * CARD_BACK
+                setattr(card, "display_status", True)
 
-            board.tableau[(idx + row_index, row_index)] = display
+            board.tableau[(idx + row_index, row_index)] = card.display_value
