@@ -39,7 +39,7 @@ class Card:
     @property
     def display_value(self) -> str:
         """Sets the icon seen for the card on the tableau, either card value or card back."""
-        if self.display_status is False:
+        if not self.display_status:
             return 2 * "\u2587"
         else:
             return self.value + self.suit
