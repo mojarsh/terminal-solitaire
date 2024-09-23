@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from terminal_solitaire.deck import build_deck, shuffle_deck
 from terminal_solitaire.game_board import Board, assign_tableau_display_icon
 from terminal_solitaire.tableau import (
@@ -7,8 +9,6 @@ from terminal_solitaire.tableau import (
     reveal_card_on_board,
     select_card_on_board,
 )
-
-# Unicode values for each suit, spades, clubs, hearts and diamonds respectively
 
 
 def main() -> None:
@@ -41,6 +41,7 @@ def main() -> None:
                 row_index=move_to_coordinates[0],
                 column_index=move_to_coordinates[1],
             )
+            pprint(original_tableau)
             reveal_card_on_board(
                 board,
                 original_tableau,

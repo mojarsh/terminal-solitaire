@@ -1,17 +1,19 @@
 import itertools
 import random
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 
-class Suits(Enum):
+class Suits(StrEnum):
+    """Unicode values for each suit, spades, clubs, hearts and diamonds respectively."""
+
     SPADES = "\u2660"
     CLUBS = "\u2663"
     HEARTS = "\u2661"
     DIAMONDS = "\u2662"
 
 
-class Values(Enum):
+class Values(StrEnum):
     ACE = "A"
     TWO = "2"
     THREE = "3"
@@ -52,9 +54,9 @@ class Deck:
         return [self.cards.pop() for _ in range(number_of_cards)]
 
 
-def set_card_colour(suit: str) -> str:
+def _set_card_colour(suit: str) -> str:
     """Sets colour of card based on suit."""
-    if suit in (Suits.HEARTS.value, Suits.DIAMONDS.value):
+    if suit in (Suits.HEARTS, Suits.DIAMONDS):
         return "Red"
     else:
         return "Black"
@@ -63,10 +65,10 @@ def set_card_colour(suit: str) -> str:
 def build_deck() -> Deck:
     """Builds deck from product of all possible Suits and Values."""
     cards = []
-    suits = [s.value for s in Suits]
-    values = [v.value for v in Values]
+    suits = [s for s in Suits]
+    values = [v for v in Values]
     for suit, value in list(itertools.product(suits, values)):
-        colour = set_card_colour(suit)
+        colour = _set_card_colour(suit)
         card = Card(suit, value, colour)
         cards.append(card)
 
