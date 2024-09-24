@@ -61,26 +61,26 @@ class Board:
 
 
 def draw_board(board: Board) -> None:
-    print("\n    00 01 02 03 04 05 06  ")
-    print("  + -------------------- +")
+    print("\n  00 01 02 03 04 05 06  ")
+    print("+ -------------------- +")
     for i in range(board.foundations.rows):
-        print("  |", end=" ")
+        print("|", end=" ")
         for k, v in board.foundations.board.items():
             if k[0] == i and isinstance(v, Card):
                 print(v.display_value, end=" ")
             elif k[0] == i and isinstance(v, str):
                 print(v, end=" ")
         print("|\r")
-    print("  + -------------------- +")
+    print("+ -------------------- +")
     for i in range(board.tableau.rows + 1):
-        print(f"{i:02}|", end=" ")
+        print(f"|", end=" ")
         for k, v in board.tableau.board.items():
             if k[0] == i and isinstance(v, Card):
                 print(v.display_value, end=" ")
             elif k[0] == i and isinstance(v, str):
                 print(v, end=" ")
         print("|\r")
-    print("  + -------------------- +")
+    print("+ -------------------- +")
 
 
 def place_cards_on_tableau(
