@@ -1,10 +1,10 @@
-from terminal_solitaire.deck import build_deck, shuffle_deck
-from terminal_solitaire.game_board import (
+from terminal_solitaire.board import (
     Board,
     draw_board,
     generate_board_element,
     place_cards_on_tableau,
 )
+from terminal_solitaire.deck import build_deck, shuffle_deck
 
 
 def main() -> None:
