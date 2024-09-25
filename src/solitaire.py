@@ -1,4 +1,4 @@
-from terminal_solitaire.board import Board, generate_board
+from terminal_solitaire.board import generate_board
 from terminal_solitaire.deck import build_deck
 from terminal_solitaire.game import Game
 
