@@ -10,6 +10,12 @@ class BoardElement:
     rows: int
     columns: int
 
+    def __iter__(self):
+        for key, value in self.board.items():
+            row = key[0]
+            column = key[1]
+            yield row, column, value
+
 
 def generate_board_element(rows: int, columns: int) -> BoardElement:
     element_rows = [_ for _ in range(rows + 1)]
@@ -30,20 +36,23 @@ class Board:
             for i in range(self.tableau.columns)
         ]
 
-    def find_last_card_in_tableau_column(self, column_index: int) -> tuple[int, int]:
-        row_indices = [
-            k[0]
-            for k, v in self.tableau.board.items()
-            if k[1] == column_index and isinstance(v, Card)
-        ]
-        last_row_index = max(row_indices)
-
-        return (last_row_index, column_index)
-
-    def find_next_free_space_in_tableau_column(
+    def find_coordinates_of_last_card(
         self, column_index: int
-    ) -> tuple[int, int]:
-        last_card = self.find_last_card_in_tableau_column(column_index)
+    ) -> tuple[int, int] | None:
+        row_indices = [
+            row
+            for row, column, value in self.tableau
+            if column == column_index and isinstance(value, Card)
+        ]
+        if row_indices != []:
+            last_row_index = max(row_indices)
+            return (last_row_index, column_index)
+
+        else:
+            return None
+
+    def find_coordinates_of_next_space(self, column_index: int) -> tuple[int, int]:
+        last_card = self.find_coordinates_of_last_card(column_index)
         return (last_card[0] + 1, column_index)
 
     def select_card_on_tableau(self, coordinates: tuple[int, int]) -> Card:
@@ -55,9 +64,11 @@ class Board:
     def place_card_on_tableau(self, card: Card, coordinates: tuple[int, int]) -> None:
         self.tableau.board[coordinates] = card
 
-    def reveal_card_on_tableau(self, coordinates: tuple[int, int]) -> None:
-        card = self.tableau.board[coordinates]
-        card.display_status = True
+    def reveal_card_on_tableau(self, coordinates: tuple[int, int] | None) -> None:
+        if coordinates is not None:
+            card = self.tableau.board[coordinates]
+            if isinstance(card, Card):
+                card.display_status = True
 
 
 def draw_board(board: Board) -> None:

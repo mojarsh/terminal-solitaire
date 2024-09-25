@@ -21,12 +21,12 @@ def main() -> None:
         try:
             move_from = int(input("\nEnter the column of the card to move: "))
             move_to = int(input("Enter the destination column: "))
-            from_coordinates = board.find_last_card_in_tableau_column(move_from)
-            to_coordinates = board.find_next_free_space_in_tableau_column(move_to)
+            from_coordinates = board.find_coordinates_of_last_card(move_from)
+            to_coordinates = board.find_coordinates_of_next_space(move_to)
             selected_card = board.select_card_on_tableau(from_coordinates)
             board.remove_card_on_tableau(from_coordinates)
             board.place_card_on_tableau(card=selected_card, coordinates=to_coordinates)
-            reveal_coordinates = board.find_last_card_in_tableau_column(move_from)
+            reveal_coordinates = board.find_coordinates_of_last_card(move_from)
             board.reveal_card_on_tableau(reveal_coordinates)
             draw_board(board)
 
