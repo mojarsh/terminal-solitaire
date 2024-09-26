@@ -29,11 +29,17 @@ class Game:
                 move_from, move_to = self._get_movement_input()
                 from_coordinates = self.tableau.find_coordinates_of_last_card(move_from)
                 to_coordinates = self.tableau.find_coordinates_of_next_space(move_to)
-                selected_card = self.tableau.select_card_on_board(from_coordinates)
-                self._apply_rules(to_coordinates, selected_card)
+                card_to_move = self.tableau.select_card_on_board(from_coordinates)
+                card_at_destination_coordinates = (
+                    self.tableau.find_coordinates_of_last_card(move_to)
+                )
+                card_at_destination = self.tableau.select_card_on_board(
+                    card_at_destination_coordinates
+                )
+                self._apply_rules(card_to_move, card_at_destination)
                 self.tableau.remove_card_from_board(from_coordinates)
                 self.tableau.place_card_on_board(
-                    card=selected_card, coordinates=to_coordinates
+                    card=card_to_move, coordinates=to_coordinates
                 )
                 reveal_coordinates = self.tableau.find_coordinates_of_last_card(
                     move_from
@@ -48,7 +54,7 @@ class Game:
                 print("Invalid move, try a different one!")
                 pass
 
-    def _apply_rules(self, coordinates: tuple[int, int], card: Card) -> None:
+    def _apply_rules(self, card_to_move: Card, card_at_destination: Card) -> None:
         for rule in self.rules:
-            if not rule(self.tableau, coordinates, card):
+            if not rule(card_to_move, card_at_destination):
                 raise ValueError()

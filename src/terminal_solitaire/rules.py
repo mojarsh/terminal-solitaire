@@ -3,26 +3,20 @@ from typing import Callable
 from terminal_solitaire.board import Board
 from terminal_solitaire.deck import Card, Values
 
-type Rule = Callable[[Board, tuple[int, int], Card], bool]
+type Rule = Callable[[Card, Card], bool]
 
 
-def alternating_colour_rule(
-    board: Board, coordinates: tuple[int, int], card: Card
-) -> bool:
-    previous_card_coordinates = board.find_coordinates_of_last_card(coordinates[1])
-    previous_card = board.select_card_on_board(previous_card_coordinates)
-    if previous_card.colour != card.colour:
+def alternating_colour_rule(card_to_move: Card, card_at_destination: Card) -> bool:
+    if card_to_move.colour != card_at_destination.colour:
         return True
     else:
         return False
 
 
-def lower_value_rule(board: Board, coordinates: tuple[int, int], card: Card) -> bool:
+def lower_value_rule(card_to_move: Card, card_at_destination: Card) -> bool:
     value_index = {value.value: idx for idx, value in enumerate(Values)}
-    previous_card_coordinates = board.find_coordinates_of_last_card(coordinates[1])
-    previous_card = board.select_card_on_board(previous_card_coordinates)
-    previous_card_index = value_index[previous_card.value]
-    current_card_index = value_index[card.value]
+    previous_card_index = value_index[card_at_destination.value]
+    current_card_index = value_index[card_to_move.value]
 
     if previous_card_index - current_card_index == 1:
         return True
