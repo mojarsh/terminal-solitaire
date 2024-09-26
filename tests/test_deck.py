@@ -1,4 +1,11 @@
-from terminal_solitaire.deck import Card, Deck, build_deck, shuffle_deck
+from terminal_solitaire.deck import (
+    Card,
+    Deck,
+    Suits,
+    _set_card_colour,
+    build_deck,
+    shuffle_deck,
+)
 
 deck = build_deck()
 shuffled = shuffle_deck(deck)
@@ -29,3 +36,16 @@ def test_deck_is_correct_size() -> None:
 
 def test_shuffled_deck_is_different() -> None:
     assert deck is not shuffled
+
+
+def test_number_of_dealt_cards() -> None:
+    deal = shuffled.deal(7)
+    assert len(deal) == 7
+
+
+def test_set_card_colour_red() -> None:
+    assert _set_card_colour(Suits.DIAMONDS) == "Red"
+
+
+def test_set_card_colour_black() -> None:
+    assert _set_card_colour(Suits.SPADES) == "Black"
