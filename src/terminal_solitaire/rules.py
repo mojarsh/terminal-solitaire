@@ -1,6 +1,5 @@
 from typing import Callable
 
-from terminal_solitaire.board import Board
 from terminal_solitaire.deck import Card, Values
 
 type Rule = Callable[[Card, Card], bool]
@@ -25,6 +24,8 @@ def lower_value_rule(card_to_move: Card, card_at_destination: Card) -> bool:
         return False
 
 
-def place_ace_on_foundations_rule(
-    board: Board, coordinates: tuple[int, int], card: Card
-) -> bool: ...
+def check_if_card_is_ace(card: Card) -> bool:
+    if card.value is Values.ACE:
+        return True
+    else:
+        return False

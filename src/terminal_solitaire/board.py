@@ -1,8 +1,16 @@
 import itertools
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Generator
 
-from terminal_solitaire.deck import Card, Deck
+from terminal_solitaire.deck import Card, Deck, Suits
+
+
+@dataclass
+class Foundations:
+    spade_foundations: list[Card] = field(default_factory=list)
+    heart_foundations: list[Card] = field(default_factory=list)
+    club_foundations: list[Card] = field(default_factory=list)
+    diamond_foundations: list[Card] = field(default_factory=list)
 
 
 @dataclass
@@ -16,6 +24,20 @@ class Board:
             row = key[0]
             column = key[1]
             yield row, column, value
+
+    def move_card_to_foundations(self, foundations: Foundations, card: Card) -> None:
+        if card.suit == Suits.SPADES:
+            foundations.spade_foundations.append(card)
+            self.board[(0, 3)] = foundations.spade_foundations[-1]
+        elif card.suit == Suits.HEARTS:
+            foundations.heart_foundations.append(card)
+            self.board[(0, 4)] = foundations.heart_foundations[-1]
+        elif card.suit == Suits.CLUBS:
+            foundations.club_foundations.append(card)
+            self.board[(0, 5)] = foundations.club_foundations[-1]
+        elif card.suit == Suits.DIAMONDS:
+            foundations.diamond_foundations.append(card)
+            self.board[(0, 6)] = foundations.diamond_foundations[-1]
 
     def deal_initial_tableau(self, deck: Deck) -> None:
         dealt_cards = [
