@@ -68,10 +68,16 @@ class Board:
 
     def find_coordinates_of_next_space(self, column_index: int) -> tuple[int, int]:
         last_card = self.find_coordinates_of_last_card(column_index)
-        return (last_card[0] + 1, column_index)
+        if last_card is None:
+            return (0, column_index)
+        else:
+            return (last_card[0] + 1, column_index)
 
-    def select_card_on_board(self, coordinates: tuple[int, int]) -> Card:
-        return self.board[coordinates]
+    def select_card_on_board(self, coordinates: tuple[int, int] | None) -> Card | None:
+        if coordinates is None:
+            return None
+        else:
+            return self.board[coordinates]
 
     def remove_card_from_board(self, coordinates: tuple[int, int]) -> None:
         self.board[coordinates] = "  "
