@@ -15,6 +15,12 @@ black = "^24.8.0"
 pytest = "^8.3.3"
 coverage = "^7.6.1"
 
+[tool.coverage.run]
+source = ["src/terminal_solitaire"]
+
+[tool.coverage.report]
+show_missing = true
+
 [tool.pytest.inioptions]
 pythonpath = ["src"]
 
