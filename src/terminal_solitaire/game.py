@@ -1,11 +1,15 @@
 from terminal_solitaire.board import Board, Foundations, draw_board
 from terminal_solitaire.deck import Card, Deck, shuffle_deck
-from terminal_solitaire.rules import Rule, check_if_card_is_ace
+from terminal_solitaire.rules import Rule
 
 
 class Game:
     def __init__(
-        self, tableau: Board, foundations: Board, deck: Deck, rules: list[Rule]
+        self,
+        tableau: Board,
+        foundations: Board,
+        deck: Deck,
+        rules: dict[str : list[Rule]],
     ) -> None:
         self.tableau_board = tableau
         self.foundation_board = foundations
@@ -21,18 +25,23 @@ class Game:
     def run_game_loop(self) -> None:
         while True:
             try:
-                move_from = int(input("\nEnter the column of the card to move: "))
+                move_to_foundations = str(input("\nMove card to foundations (Y/N): "))
+                move_from = int(input("Enter the column of the card to move: "))
                 from_coordinates = self.tableau_board.find_coordinates_of_last_card(
                     move_from
                 )
                 card_to_move = self.tableau_board.select_card_on_board(from_coordinates)
-                if check_if_card_is_ace(card_to_move):
+                if move_to_foundations == "Y":
+                    last_card = self.foundation_board.check_last_card_on_foundations(
+                        self.foundation_list, card_to_move
+                    )
+                    self._apply_rules(card_to_move, last_card, move_to_foundations)
                     self.foundation_board.move_card_to_foundations(
                         self.foundation_list, card_to_move
                     )
                     self.tableau_board.remove_card_from_board(from_coordinates)
 
-                else:
+                elif move_to_foundations == "N":
                     move_to = int(input("Enter the destination column: "))
                     to_coordinates = self.tableau_board.find_coordinates_of_next_space(
                         move_to
@@ -43,11 +52,16 @@ class Game:
                     card_at_destination = self.tableau_board.select_card_on_board(
                         card_at_destination_coordinates
                     )
-                    self._apply_rules(card_to_move, card_at_destination)
+                    self._apply_rules(
+                        card_to_move, card_at_destination, move_to_foundations
+                    )
                     self.tableau_board.remove_card_from_board(from_coordinates)
                     self.tableau_board.place_card_on_board(
                         card=card_to_move, coordinates=to_coordinates
                     )
+
+                else:
+                    raise ValueError
 
                 reveal_coordinates = self.tableau_board.find_coordinates_of_last_card(
                     move_from
@@ -62,7 +76,14 @@ class Game:
                 print("Invalid move, try a different one!")
                 pass
 
-    def _apply_rules(self, card_to_move: Card, card_at_destination: Card) -> None:
-        for rule in self.rules:
+    def _apply_rules(
+        self, card_to_move: Card, card_at_destination: Card, move_to_foundations: str
+    ) -> None:
+        if move_to_foundations == "Y":
+            rules = self.rules["foundation"]
+        else:
+            rules = self.rules["tableau"]
+
+        for rule in rules:
             if not rule(card_to_move, card_at_destination):
-                raise ValueError()
+                raise ValueError

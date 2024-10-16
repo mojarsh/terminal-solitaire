@@ -25,6 +25,21 @@ class Board:
             column = key[1]
             yield row, column, value
 
+    def check_last_card_on_foundations(
+        self, foundations: Foundations, card: Card
+    ) -> Card | None:
+        try:
+            if card.suit == Suits.SPADES:
+                return foundations.spade_foundations[-1]
+            elif card.suit == Suits.HEARTS:
+                return foundations.heart_foundations[-1]
+            elif card.suit == Suits.CLUBS:
+                return foundations.club_foundations[-1]
+            elif card.suit == Suits.DIAMONDS:
+                return foundations.diamond_foundations[-1]
+        except IndexError:
+            return None
+
     def move_card_to_foundations(self, foundations: Foundations, card: Card) -> None:
         if card.suit == Suits.SPADES:
             foundations.spade_foundations.append(card)
