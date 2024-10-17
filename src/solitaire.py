@@ -1,4 +1,4 @@
-from terminal_solitaire.board import generate_board
+from terminal_solitaire.board import generate_foundations, generate_tableau
 from terminal_solitaire.deck import build_deck
 from terminal_solitaire.game import Game
 from terminal_solitaire.rules import (
@@ -10,8 +10,8 @@ from terminal_solitaire.rules import (
 
 
 def main() -> None:
-    tableau = generate_board(13, 7, True)
-    foundations = generate_board(1, 7, False)
+    tableau = generate_tableau(13, 7)
+    foundations = generate_foundations(1, 7)
     deck = build_deck()
     rules = {
         "foundation": [higher_value_foundation_rule],

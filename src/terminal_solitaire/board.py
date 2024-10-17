@@ -17,6 +17,7 @@ class Board(ABC):
         pass
 
 
+@dataclass
 class Foundations(Board):
     spade_foundations: list[Card] = field(default_factory=list)
     heart_foundations: list[Card] = field(default_factory=list)
@@ -57,6 +58,7 @@ class Foundations(Board):
             self.board[(0, 6)] = self.diamond_foundations[-1]
 
 
+@dataclass
 class Tableau(Board):
     def __iter__(self) -> Generator[int, int, str | Card]:
         for key, value in self.board.items():
@@ -117,15 +119,20 @@ class Tableau(Board):
                 card.display_status = True
 
 
-def generate_board(rows: int, columns: int, is_tableau: bool) -> Tableau | Foundations:
+def generate_tableau(rows: int, columns: int) -> Foundations:
     element_rows = [_ for _ in range(rows + 1)]
     element_columns = [_ for _ in range(columns)]
 
     board = {k: "  " for k in tuple(itertools.product(element_rows, element_columns))}
-    if is_tableau:
-        return Tableau(board, rows, columns)
-    elif not is_tableau:
-        return Foundations(board, rows, columns)
+    return Tableau(board, rows, columns)
+
+
+def generate_foundations(rows: int, columns: int) -> Foundations:
+    element_rows = [_ for _ in range(rows + 1)]
+    element_columns = [_ for _ in range(columns)]
+
+    board = {k: "  " for k in tuple(itertools.product(element_rows, element_columns))}
+    return Foundations(board, rows, columns)
 
 
 def draw_board(tableau: Tableau, foundations: Foundations) -> None:
