@@ -1,7 +1,7 @@
-from terminal_solitaire.board import Board, Tableau, generate_board
+from terminal_solitaire.board import Board, Tableau, generate_tableau
 from terminal_solitaire.deck import Card, build_deck
 
-tableau = generate_board(13, 7, True)
+tableau = generate_tableau(13, 7)
 
 
 def test_generated_board_is_correct_size() -> None:
@@ -35,7 +35,7 @@ def test_find_coordinates_of_last_card_happy_path() -> None:
 
 
 def test_find_coordinates_of_last_card_unhappy_path() -> None:
-    empty_tableau = generate_board(13, 7, True)
+    empty_tableau = generate_tableau(13, 7)
     assert empty_tableau.find_coordinates_of_last_card(6) == None
 
 
