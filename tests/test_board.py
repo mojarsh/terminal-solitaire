@@ -12,6 +12,13 @@ def test_board_instance() -> None:
     assert isinstance(tableau, Tableau)
 
 
+def test_stack_of_revealed_cards() -> None:
+    deck = build_deck()
+    tableau.deal_initial_tableau(deck)
+    revealed_cards = tableau.get_stack_of_revealed_cards(1)
+    assert len(revealed_cards.keys()) == 1
+
+
 def test_number_of_cards_dealt_onto_board() -> None:
     deck = build_deck()
     tableau.deal_initial_tableau(deck)
