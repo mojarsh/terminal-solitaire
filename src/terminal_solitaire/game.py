@@ -1,4 +1,4 @@
-from terminal_solitaire.board import Board, Foundations, draw_board
+from terminal_solitaire.board import Foundations, Tableau, draw_board
 from terminal_solitaire.deck import Card, Deck, shuffle_deck
 from terminal_solitaire.rules import Rule
 
@@ -6,14 +6,13 @@ from terminal_solitaire.rules import Rule
 class Game:
     def __init__(
         self,
-        tableau: Board,
-        foundations: Board,
+        tableau: Tableau,
+        foundations: Foundations,
         deck: Deck,
         rules: dict[str : list[Rule]],
     ) -> None:
         self.tableau_board = tableau
         self.foundation_board = foundations
-        self.foundation_list = Foundations()
         self.deck = deck
         self.rules = rules
 
@@ -33,12 +32,10 @@ class Game:
                 card_to_move = self.tableau_board.select_card_on_board(from_coordinates)
                 if move_to_foundations == "Y":
                     last_card = self.foundation_board.check_last_card_on_foundations(
-                        self.foundation_list, card_to_move
+                        card_to_move
                     )
                     self._apply_rules(card_to_move, last_card, move_to_foundations)
-                    self.foundation_board.move_card_to_foundations(
-                        self.foundation_list, card_to_move
-                    )
+                    self.foundation_board.move_card_to_foundations(card_to_move)
                     self.tableau_board.remove_card_from_board(from_coordinates)
 
                 elif move_to_foundations == "N":

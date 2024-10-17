@@ -1,4 +1,5 @@
 import itertools
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Generator
 
@@ -6,18 +7,21 @@ from terminal_solitaire.deck import Card, Deck, Suits
 
 
 @dataclass
-class Foundations:
+class Board(ABC):
+    board: dict[tuple : str | Card]
+    rows: int
+    columns: int
+
+    @abstractmethod
+    def __iter__(self) -> Generator[int, int, str | Card]:
+        pass
+
+
+class Foundations(Board):
     spade_foundations: list[Card] = field(default_factory=list)
     heart_foundations: list[Card] = field(default_factory=list)
     club_foundations: list[Card] = field(default_factory=list)
     diamond_foundations: list[Card] = field(default_factory=list)
-
-
-@dataclass
-class Board:
-    board: dict[tuple : str | Card]
-    rows: int
-    columns: int
 
     def __iter__(self) -> Generator[int, int, str | Card]:
         for key, value in self.board.items():
@@ -25,34 +29,40 @@ class Board:
             column = key[1]
             yield row, column, value
 
-    def check_last_card_on_foundations(
-        self, foundations: Foundations, card: Card
-    ) -> Card | None:
+    def check_last_card_on_foundations(self, card: Card) -> Card | None:
         try:
             if card.suit == Suits.SPADES:
-                return foundations.spade_foundations[-1]
+                return self.spade_foundations[-1]
             elif card.suit == Suits.HEARTS:
-                return foundations.heart_foundations[-1]
+                return self.heart_foundations[-1]
             elif card.suit == Suits.CLUBS:
-                return foundations.club_foundations[-1]
+                return self.club_foundations[-1]
             elif card.suit == Suits.DIAMONDS:
-                return foundations.diamond_foundations[-1]
+                return self.diamond_foundations[-1]
         except IndexError:
             return None
 
-    def move_card_to_foundations(self, foundations: Foundations, card: Card) -> None:
+    def move_card_to_foundations(self, card: Card) -> None:
         if card.suit == Suits.SPADES:
-            foundations.spade_foundations.append(card)
-            self.board[(0, 3)] = foundations.spade_foundations[-1]
+            self.spade_foundations.append(card)
+            self.board[(0, 3)] = self.spade_foundations[-1]
         elif card.suit == Suits.HEARTS:
-            foundations.heart_foundations.append(card)
-            self.board[(0, 4)] = foundations.heart_foundations[-1]
+            self.heart_foundations.append(card)
+            self.board[(0, 4)] = self.heart_foundations[-1]
         elif card.suit == Suits.CLUBS:
-            foundations.club_foundations.append(card)
-            self.board[(0, 5)] = foundations.club_foundations[-1]
+            self.club_foundations.append(card)
+            self.board[(0, 5)] = self.club_foundations[-1]
         elif card.suit == Suits.DIAMONDS:
-            foundations.diamond_foundations.append(card)
-            self.board[(0, 6)] = foundations.diamond_foundations[-1]
+            self.diamond_foundations.append(card)
+            self.board[(0, 6)] = self.diamond_foundations[-1]
+
+
+class Tableau(Board):
+    def __iter__(self) -> Generator[int, int, str | Card]:
+        for key, value in self.board.items():
+            row = key[0]
+            column = key[1]
+            yield row, column, value
 
     def deal_initial_tableau(self, deck: Deck) -> None:
         dealt_cards = [
@@ -107,15 +117,18 @@ class Board:
                 card.display_status = True
 
 
-def generate_board(rows: int, columns: int) -> Board:
+def generate_board(rows: int, columns: int, is_tableau: bool) -> Tableau | Foundations:
     element_rows = [_ for _ in range(rows + 1)]
     element_columns = [_ for _ in range(columns)]
 
     board = {k: "  " for k in tuple(itertools.product(element_rows, element_columns))}
-    return Board(board, rows, columns)
+    if is_tableau:
+        return Tableau(board, rows, columns)
+    elif not is_tableau:
+        return Foundations(board, rows, columns)
 
 
-def draw_board(tableau: Board, foundations: Board) -> None:
+def draw_board(tableau: Tableau, foundations: Foundations) -> None:
     print("\n  00 01 02 03 04 05 06  ")
     print("+ -------------------- +")
     for i in range(foundations.rows):

@@ -10,8 +10,8 @@ from terminal_solitaire.rules import (
 
 
 def main() -> None:
-    tableau = generate_board(13, 7)
-    foundations = generate_board(1, 7)
+    tableau = generate_board(13, 7, True)
+    foundations = generate_board(1, 7, False)
     deck = build_deck()
     rules = {
         "foundation": [higher_value_foundation_rule],
