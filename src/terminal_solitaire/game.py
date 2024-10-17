@@ -28,37 +28,44 @@ class Game:
                 _validate_user_input(move_to_foundations)
                 move_from = int(input("Enter the column of the card to move: "))
                 _validate_user_input(move_from)
-                from_coordinates = self.tableau_board.find_coordinates_of_last_card(
+                last_coordinates = self.tableau_board.find_coordinates_of_last_card(
                     move_from
                 )
-                card_to_move = self.tableau_board.select_card_on_board(from_coordinates)
+                last_card_to_move = self.tableau_board.select_card_on_board(
+                    last_coordinates
+                )
+                cards_to_move = self.tableau_board.get_stack_of_revealed_cards(
+                    move_from
+                )
                 if move_to_foundations == "Y":
                     last_card = self.foundation_board.check_last_card_on_foundations(
-                        card_to_move
+                        last_card_to_move
                     )
-                    self._apply_rules(card_to_move, last_card, move_to_foundations)
-                    self.foundation_board.move_card_to_foundations(card_to_move)
-                    self.tableau_board.remove_card_from_board(from_coordinates)
+                    self._apply_rules(last_card_to_move, last_card, move_to_foundations)
+                    self.foundation_board.move_card_to_foundations(last_card_to_move)
+                    self.tableau_board.remove_card_from_board(last_coordinates)
 
                 elif move_to_foundations == "N":
                     move_to = int(input("Enter the destination column: "))
                     _validate_user_input(move_to)
-                    to_coordinates = self.tableau_board.find_coordinates_of_next_space(
-                        move_to
-                    )
                     card_at_destination_coordinates = (
                         self.tableau_board.find_coordinates_of_last_card(move_to)
                     )
                     card_at_destination = self.tableau_board.select_card_on_board(
                         card_at_destination_coordinates
                     )
+                    first_card = next(iter(cards_to_move.values()))
                     self._apply_rules(
-                        card_to_move, card_at_destination, move_to_foundations
+                        first_card, card_at_destination, move_to_foundations
                     )
-                    self.tableau_board.remove_card_from_board(from_coordinates)
-                    self.tableau_board.place_card_on_board(
-                        card=card_to_move, coordinates=to_coordinates
-                    )
+                    for coordinates, card in cards_to_move.items():
+                        to_coordinates = (
+                            self.tableau_board.find_coordinates_of_next_space(move_to)
+                        )
+                        self.tableau_board.remove_card_from_board(coordinates)
+                        self.tableau_board.place_card_on_board(
+                            card, coordinates=to_coordinates
+                        )
 
                 reveal_coordinates = self.tableau_board.find_coordinates_of_last_card(
                     move_from

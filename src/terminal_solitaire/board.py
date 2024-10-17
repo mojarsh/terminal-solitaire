@@ -78,6 +78,31 @@ class Tableau(Board):
 
                 self.board[(row_index, idx + row_index)] = card
 
+    def find_coordinates_of_first_revealed_card(
+        self, column_index: int
+    ) -> tuple[int, int] | None:
+        row_indices = [
+            row
+            for row, column, value in self
+            if column == column_index
+            and isinstance(value, Card)
+            and value.display_status
+        ]
+        if row_indices != []:
+            first_row_index = min(row_indices)
+            return (first_row_index, column_index)
+
+        else:
+            return None
+
+    def get_stack_of_revealed_cards(self, column_index) -> dict[tuple:Card]:
+        first_card = self.find_coordinates_of_first_revealed_card(column_index)
+        last_card = self.find_coordinates_of_last_card(column_index)
+        coordinate_list = [
+            (i, column_index) for i in range(first_card[0], last_card[0] + 1)
+        ]
+        return {c: self.select_card_on_board(c) for c in coordinate_list}
+
     def find_coordinates_of_last_card(
         self, column_index: int
     ) -> tuple[int, int] | None:
