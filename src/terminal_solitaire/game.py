@@ -1,6 +1,6 @@
 from terminal_solitaire.board import Foundations, Tableau, draw_board
 from terminal_solitaire.deck import Card, Deck, shuffle_deck
-from terminal_solitaire.rules import Rule
+from terminal_solitaire.rules import Rule, RuleBreakError
 
 
 class Game:
@@ -73,7 +73,7 @@ class Game:
                 self.tableau_board.reveal_card_on_board(reveal_coordinates)
                 draw_board(self.tableau_board, self.foundation_board)
 
-            except (LocationInputError, ColumnInputError) as e:
+            except (LocationInputError, ColumnInputError, RuleBreakError) as e:
                 print(e.message)
                 pass
 
@@ -90,7 +90,7 @@ class Game:
 
         for rule in rules:
             if not rule(card_to_move, card_at_destination):
-                raise ValueError
+                raise RuleBreakError
 
 
 def _validate_user_input(input: str | int) -> None:
