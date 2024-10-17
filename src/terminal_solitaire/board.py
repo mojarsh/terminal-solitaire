@@ -119,7 +119,7 @@ class Tableau(Board):
                 card.display_status = True
 
 
-def generate_tableau(rows: int, columns: int) -> Foundations:
+def generate_tableau(rows: int, columns: int) -> Tableau:
     element_rows = [_ for _ in range(rows + 1)]
     element_columns = [_ for _ in range(columns)]
 
