@@ -25,7 +25,9 @@ class Game:
         while True:
             try:
                 move_to_foundations = str(input("\nMove card to foundations (Y/N): "))
+                _validate_user_input(move_to_foundations)
                 move_from = int(input("Enter the column of the card to move: "))
+                _validate_user_input(move_from)
                 from_coordinates = self.tableau_board.find_coordinates_of_last_card(
                     move_from
                 )
@@ -40,6 +42,7 @@ class Game:
 
                 elif move_to_foundations == "N":
                     move_to = int(input("Enter the destination column: "))
+                    _validate_user_input(move_to)
                     to_coordinates = self.tableau_board.find_coordinates_of_next_space(
                         move_to
                     )
@@ -57,21 +60,18 @@ class Game:
                         card=card_to_move, coordinates=to_coordinates
                     )
 
-                else:
-                    raise ValueError
-
                 reveal_coordinates = self.tableau_board.find_coordinates_of_last_card(
                     move_from
                 )
                 self.tableau_board.reveal_card_on_board(reveal_coordinates)
                 draw_board(self.tableau_board, self.foundation_board)
 
+            except (LocationInputError, ColumnInputError) as e:
+                print(e.message)
+                pass
+
             except EOFError:
                 break
-
-            except ValueError:
-                print("Invalid move, try a different one!")
-                pass
 
     def _apply_rules(
         self, card_to_move: Card, card_at_destination: Card, move_to_foundations: str
@@ -84,3 +84,24 @@ class Game:
         for rule in rules:
             if not rule(card_to_move, card_at_destination):
                 raise ValueError
+
+
+def _validate_user_input(input: str | int) -> None:
+    if isinstance(input, int) and input not in range(0, 10):
+        raise ColumnInputError(input)
+    elif isinstance(input, str) and input not in ["Y", "N"]:
+        raise LocationInputError(input)
+
+
+class LocationInputError(Exception):
+    def __init__(self, input: str):
+        self.input = input
+        self.message = (
+            f"Input must be 'Y' or 'N' when selecting move location, not {self.input}"
+        )
+
+
+class ColumnInputError(Exception):
+    def __init__(self, input: int):
+        self.input = input
+        self.message = f"Input must be a single digit integer when selecting columns, not {self.input}"
