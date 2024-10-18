@@ -62,8 +62,10 @@ def king_to_empty_space_rule(
         return False
 
 
-def _check_if_card_is_ace(card: Card) -> bool:
-    if card.value is Values.ACE:
+def _check_if_card_is_ace(card: Card | None) -> bool:
+    if card is None:
+        return False
+    elif card.value is Values.ACE:
         return True
     else:
         return False

@@ -4,6 +4,13 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 
+class EmptyDeckError(Exception):
+    def __init__(self):
+        self.message = (
+            f"You have no more cards to draw from the deck, try another action!"
+        )
+
+
 class Suits(StrEnum):
     """Unicode values for each suit, spades, clubs, hearts and diamonds respectively."""
 
@@ -51,7 +58,12 @@ class Deck:
 
     def deal(self, number_of_cards: int) -> list[Card]:
         """Deals cards from the deck using integer passed as argument."""
-        return [self.cards.pop() for _ in range(number_of_cards)]
+        if self.cards == []:
+            raise EmptyDeckError
+        elif len(self.cards) < number_of_cards:
+            return [self.cards.pop() for _ in range(len(self.cards))]
+        else:
+            return [self.cards.pop() for _ in range(number_of_cards)]
 
 
 def _set_card_colour(suit: str) -> str:

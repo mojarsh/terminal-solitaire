@@ -40,7 +40,7 @@ class Foundations(Board):
                 return self.club_foundations[-1]
             elif card.suit == Suits.DIAMONDS:
                 return self.diamond_foundations[-1]
-        except IndexError:
+        except (IndexError, AttributeError):
             return None
 
     def move_card_to_foundations(self, card: Card) -> None:
