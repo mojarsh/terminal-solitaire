@@ -2,6 +2,29 @@ from terminal_solitaire.board import Foundations, Tableau, draw_board
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import Rule, RuleBreakError
 
+GAME_RULES = """
+Welcome to Terminal Solitaire!
+
+Objective:
+
+ - Move all the cards to the four foundation piles, arranged by suit and ascending rank (Ace to King)
+
+Gameplay:
+
+ - Move face-up tableau cards onto opposite-colour cards of the next rank
+ - Sequences of descending, alternating-colour cards can be moved together
+ - Empty tableau spots can only be filled by Kings or King sequences
+ - Draw cards from the stock to play when no other moves are possible
+ - Build foundation piles by suit, Ace to King
+
+Controls:
+
+ - Use 'd' to draw from your hand
+ - Use 'h' to access your hand
+ - Use 't' to place cards on the tableau
+ - Use 'f' to place cards on the foundations
+"""
+
 
 class Game:
     def __init__(
@@ -9,7 +32,7 @@ class Game:
         tableau: Tableau,
         foundations: Foundations,
         deck: Deck,
-        rules: dict[str : list[Rule]],
+        rules: dict[str, list[Rule]],
     ) -> None:
         self.tableau_board = tableau
         self.foundation_board = foundations
@@ -22,6 +45,7 @@ class Game:
         shuffled = shuffle_deck(self.deck)
         self.deck = shuffled
         self.tableau_board.deal_initial_tableau(self.deck)
+        print(GAME_RULES)
         draw_board(self.tableau_board, self.foundation_board)
 
     def run_game_loop(self) -> None:
