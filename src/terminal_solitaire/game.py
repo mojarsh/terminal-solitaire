@@ -89,7 +89,7 @@ class Game:
                         )
                     ).strip()
                     if hand_movement_input == "f":
-                        first_card_in_hand = self.hand.pop(0)
+                        first_card_in_hand = self.hand[0]
                         last_card_on_foundations = (
                             self.foundation_board.check_last_card_on_foundations(
                                 first_card_in_hand
@@ -100,6 +100,7 @@ class Game:
                             last_card_on_foundations,
                             hand_movement_input,
                         )
+                        self.hand.pop(0)
                         self.foundation_board.move_card_to_foundations(
                             first_card_in_hand
                         )
@@ -114,7 +115,9 @@ class Game:
                         )
                         first_card_in_hand = self.hand[0]
                         self._apply_rules(
-                            first_card_in_hand, card_at_destination, hand_movement_input
+                            first_card_in_hand,
+                            card_at_destination,
+                            hand_movement_input,
                         )
                         first_card_in_hand = self.hand.pop(0)
                         to_coordinates = (
@@ -171,8 +174,9 @@ class Game:
                 print("Column input must be an integer!")
                 pass
 
-            except EOFError:
-                break
+            except IndexError:
+                print("There are no cards left in your hand!")
+                pass
 
         if self.game_won:
             print("\nCongratulations, you won!")
@@ -233,7 +237,7 @@ def _validate_user_input(input: str | int) -> None:
 class ActionInputError(Exception):
     def __init__(self, input: str):
         self.input = input
-        self.message = f"Action must be 't', 'f', 'd' or 'h', not {self.input}"
+        self.message = f"Action must be 't', 'f', 'd', 'h' or 'q', not {self.input}"
 
 
 class ColumnInputError(Exception):
