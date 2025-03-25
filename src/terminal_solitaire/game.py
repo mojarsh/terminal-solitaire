@@ -1,6 +1,7 @@
 from terminal_solitaire.board import Foundations, Tableau, draw_board
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import Rule, RuleBreakError
+import sys
 
 GAME_RULES = """
 Welcome to Terminal Solitaire!
@@ -13,7 +14,7 @@ Gameplay:
 
  - Move face-up tableau cards onto opposite-colour cards of the next rank
  - Sequences of descending, alternating-colour cards can be moved together
- - Empty tableau spots can only be filled by Kings or King sequences
+ - Empty tableau spots can only be filled by Kings or sequences starting with Kings
  - Draw cards from the stock to play when no other moves are possible
  - Build foundation piles by suit, Ace to King
 
@@ -23,6 +24,7 @@ Controls:
  - Use 'h' to access your hand
  - Use 't' to place cards on the tableau
  - Use 'f' to place cards on the foundations
+ - Use 'q' to quit the game
 """
 
 
@@ -138,6 +140,15 @@ class Game:
                         else:
                             card.display_status = False
 
+                elif action_input == "q":
+                    user_sure = input("Are you sure you want to quit (y/n): ")
+                    if user_sure == "y":
+                        print("\nBetter luck next time...")
+                        sys.exit(0)
+
+                    else:
+                        continue
+
                 draw_board(self.tableau_board, self.foundation_board)
                 self._check_if_game_won()
                 if self.hand is not None:
@@ -164,9 +175,7 @@ class Game:
                 break
 
         if self.game_won:
-            print("\n Congratulations, you won!")
-        else:
-            print("\n Better luck next time!")
+            print("\nCongratulations, you won!")
 
     def _apply_rules(
         self, card_to_move: Card, card_at_destination: Card, action_input: str
@@ -217,7 +226,7 @@ class Game:
 def _validate_user_input(input: str | int) -> None:
     if isinstance(input, int) and input not in range(0, 10):
         raise ColumnInputError(input)
-    elif isinstance(input, str) and input not in ["t", "f", "d", "h"]:
+    elif isinstance(input, str) and input not in ["t", "f", "d", "h", "q"]:
         raise ActionInputError(input)
 
 
