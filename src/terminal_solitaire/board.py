@@ -8,7 +8,7 @@ from terminal_solitaire.deck import Card, Deck, Suits
 
 @dataclass
 class Board(ABC):
-    board: dict[tuple : str | Card]
+    board: dict[tuple, str | Card]
     rows: int
     columns: int
 
