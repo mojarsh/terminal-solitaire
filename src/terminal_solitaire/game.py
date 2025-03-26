@@ -1,4 +1,9 @@
-from terminal_solitaire.board import Foundations, Tableau, draw_board
+from terminal_solitaire.board import (
+    Foundations,
+    Tableau,
+    draw_board,
+    show_top_card_in_hand,
+)
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import Rule, RuleBreakError
 import sys
@@ -20,7 +25,7 @@ Gameplay:
 
 Controls:
 
- - Use 'd' to draw from your hand
+ - Use 'd' to draw from the deck
  - Use 'h' to access your hand
  - Use 't' to place cards on the tableau
  - Use 'f' to place cards on the foundations
@@ -38,7 +43,7 @@ class Game:
     ) -> None:
         self.tableau_board = tableau
         self.foundation_board = foundations
-        self.hand = None
+        self.hand = []
         self.deck = deck
         self.rules = rules
         self.game_won = False
@@ -83,6 +88,9 @@ class Game:
                     self._tableau_movement_pattern(action_input)
 
                 elif action_input == "h":
+                    if self.hand == []:
+                        raise EmptyHandError
+
                     hand_movement_input = str(
                         input(
                             "Enter 'f' to move to foundations, 't' to move to tableau: "
@@ -126,22 +134,18 @@ class Game:
                         self.tableau_board.place_card_on_board(
                             first_card_in_hand, coordinates=to_coordinates
                         )
-                    for idx, card in enumerate(self.hand):
-                        if idx == 0:
-                            card.display_status = True
-                        else:
-                            card.display_status = False
+
+                    show_top_card_in_hand(self.hand)
 
                 elif action_input == "d":
-                    if self.hand is not None:
+                    if len(self.deck.cards) == 0:
+                        raise EmptyDeckError
+
+                    elif self.hand != []:
                         [self.deck.cards.insert(0, card) for card in self.hand[::-1]]
 
                     self.hand = self.deck.deal(3)
-                    for idx, card in enumerate(self.hand):
-                        if idx == 0:
-                            card.display_status = True
-                        else:
-                            card.display_status = False
+                    show_top_card_in_hand(self.hand)
 
                 elif action_input == "q":
                     user_sure = input("Are you sure you want to quit (y/n): ")
@@ -154,17 +158,17 @@ class Game:
 
                 draw_board(self.tableau_board, self.foundation_board)
                 self._check_if_game_won()
-                if self.hand is not None:
-                    print(
-                        "Hand: ",
-                        " ".join([card.display_value for card in self.hand]),
-                        f" Cards in deck: {len(self.deck.cards)}",
-                    )
+                print(
+                    "Hand: ",
+                    " ".join([card.display_value for card in self.hand]),
+                    f" Cards in deck: {len(self.deck.cards)}",
+                )
 
             except (
                 ActionInputError,
                 ColumnInputError,
                 RuleBreakError,
+                EmptyHandError,
                 EmptyDeckError,
             ) as e:
                 print(e.message)
@@ -172,10 +176,6 @@ class Game:
 
             except ValueError:
                 print("Column input must be an integer!")
-                pass
-
-            except IndexError:
-                print("There are no cards left in your hand!")
                 pass
 
         if self.game_won:
@@ -238,6 +238,11 @@ class ActionInputError(Exception):
     def __init__(self, input: str):
         self.input = input
         self.message = f"Action must be 't', 'f', 'd', 'h' or 'q', not {self.input}"
+
+
+class EmptyHandError(Exception):
+    def __init__(self):
+        self.message = "There are no cards in your hand."
 
 
 class ColumnInputError(Exception):

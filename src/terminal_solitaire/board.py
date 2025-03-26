@@ -160,6 +160,15 @@ def generate_foundations(rows: int, columns: int) -> Foundations:
     return Foundations(board, rows, columns)
 
 
+def show_top_card_in_hand(hand: list[Card]) -> None:
+    """Display the first card in hand to the player."""
+    for idx, card in enumerate(hand):
+        if idx == 0:
+            card.display_status = True
+        else:
+            card.display_status = False
+
+
 def draw_board(tableau: Tableau, foundations: Foundations) -> None:
     print("\n  00 01 02 03 04 05 06  ")
     print("+ -------------------- +")
