@@ -182,7 +182,7 @@ def draw_board(tableau: Tableau, foundations: Foundations) -> None:
         print("|\r")
     print("+ -------------------- +")
     for i in range(tableau.rows + 1):
-        print(f"|", end=" ")
+        print("|", end=" ")
         for row, _, value in tableau:
             if row == i and isinstance(value, Card):
                 print(value.display_value, end=" ")

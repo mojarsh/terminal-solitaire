@@ -7,7 +7,7 @@ from enum import StrEnum
 class EmptyDeckError(Exception):
     def __init__(self):
         self.message = (
-            f"You have no more cards to draw from the deck, try another action!"
+            "You have no more cards to draw from the deck, try another action!"
         )
 
 

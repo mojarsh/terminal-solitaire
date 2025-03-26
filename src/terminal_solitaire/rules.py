@@ -73,4 +73,4 @@ def _check_if_card_is_ace(card: Card | None) -> bool:
 
 class RuleBreakError(Exception):
     def __init__(self):
-        self.message = f"Invalid move, try another one!"
+        self.message = "Invalid move, try another one!"
