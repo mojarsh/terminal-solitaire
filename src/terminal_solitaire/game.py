@@ -226,7 +226,7 @@ class Game:
 
 
 def _validate_user_input(input: str | int) -> None:
-    if isinstance(input, int) and input not in range(0, 10):
+    if isinstance(input, int) and input not in range(7):
         raise ColumnInputError(input)
     elif isinstance(input, str) and input not in ["t", "f", "d", "h", "q"]:
         raise ActionInputError(input)
@@ -246,4 +246,6 @@ class EmptyHandError(Exception):
 class ColumnInputError(Exception):
     def __init__(self, input: int):
         self.input = input
-        self.message = f"Input must be a single digit integer when selecting columns, not {self.input}"
+        self.message = (
+            f"Column input must be a number between 0 and 6, not {self.input}"
+        )
