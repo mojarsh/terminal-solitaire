@@ -10,7 +10,7 @@ from terminal_solitaire.rules import (
 
 
 def main() -> None:
-    tableau = generate_tableau(13, 7)
+    tableau = generate_tableau(20, 7)
     foundations = generate_foundations(1, 7)
     deck = build_deck()
     rules = {
