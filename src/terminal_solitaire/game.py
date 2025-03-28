@@ -138,7 +138,7 @@ class Game:
                     show_top_card_in_hand(self.hand)
 
                 elif action_input == "d":
-                    if len(self.deck.cards) == 0:
+                    if len(self.deck.cards) == 0 and self.hand == []:
                         raise EmptyDeckError
 
                     elif self.hand != []:
