@@ -8,20 +8,21 @@ from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import Rule, RuleBreakError
 import sys
 
+WELCOME_MESSAGE = """
+Welcome to Terminal Solitaire! 
+
+Your goal is to move all cards to the four foundation piles, arranged by suit and ascending rank (Ace to King).
+
+Press 'r' if you need to see the rules and controls.
+"""
+
 GAME_RULES = """
-Welcome to Terminal Solitaire!
+Rules:
 
-Objective:
-
- - Move all the cards to the four foundation piles, arranged by suit and ascending rank (Ace to King)
-
-Gameplay:
-
- - Move face-up tableau cards onto opposite-colour cards of the next rank
+ - Move face-up tableau cards onto opposite-colour cards of one-higher rank
  - Sequences of descending, alternating-colour cards can be moved together
  - Empty tableau spots can only be filled by Kings or sequences starting with Kings
- - Draw cards from the stock to play when no other moves are possible
- - Build foundation piles by suit, Ace to King
+ - Draw cards from the deck to play when no other moves are possible
 
 Controls:
 
@@ -29,6 +30,7 @@ Controls:
  - Use 'h' to access your hand
  - Use 't' to place cards on the tableau
  - Use 'f' to place cards on the foundations
+ - Use 'r' for a reminder of these rules and controls
  - Use 'q' to quit the game
 """
 
@@ -52,14 +54,15 @@ class Game:
             "t": self._tableau_action,
             "h": self._hand_action,
             "d": self._draw_action,
-            "q": self._quit_action,
+            "q": _quit_game,
+            "r": _display_rules,
         }
 
     def initialise_game(self) -> None:
         shuffled = shuffle_deck(self.deck)
         self.deck = shuffled
         self.tableau_board.deal_initial_tableau(self.deck)
-        print(GAME_RULES)
+        print(WELCOME_MESSAGE)
         draw_board(self.tableau_board, self.foundation_board)
 
     def run_game_loop(self) -> None:
@@ -205,14 +208,6 @@ class Game:
         self.hand = self.deck.deal(3)
         show_top_card_in_hand(self.hand)
 
-    def _quit_action(self) -> None:
-        """Handles operations when quit action is selected by user."""
-
-        user_sure = input("Are you sure you want to quit (y/n): ")
-        if user_sure == "y":
-            print("\nBetter luck next time...")
-            sys.exit(0)
-
     def _check_if_game_won(self) -> None:
         combined_foundations = (
             self.foundation_board.spade_foundations
@@ -225,17 +220,32 @@ class Game:
             self.game_won = True
 
 
+def _display_rules() -> None:
+    print(GAME_RULES)
+
+
+def _quit_game() -> None:
+    """Handles operations when quit action is selected by user."""
+
+    user_sure = input("Are you sure you want to quit (y/n): ")
+    if user_sure == "y":
+        print("\nBetter luck next time...")
+        sys.exit(0)
+
+
 def _validate_user_input(input: str | int) -> None:
     if isinstance(input, int) and input not in range(7):
         raise ColumnInputError(input)
-    elif isinstance(input, str) and input not in ["t", "f", "d", "h", "q"]:
+    elif isinstance(input, str) and input not in ["t", "f", "d", "h", "q", "r"]:
         raise ActionInputError(input)
 
 
 class ActionInputError(Exception):
     def __init__(self, input: str):
         self.input = input
-        self.message = f"Action must be 't', 'f', 'd', 'h' or 'q', not {self.input}"
+        self.message = (
+            f"Action must be 't', 'f', 'd', 'h', 'r' or 'q', not {self.input}"
+        )
 
 
 class EmptyHandError(Exception):
