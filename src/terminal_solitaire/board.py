@@ -190,3 +190,8 @@ def draw_board(tableau: Tableau, foundations: Foundations) -> None:
                 print(value, end=" ")
         print("|\r")
     print("+ -------------------- +")
+
+
+def clear_board(tableau: Tableau, foundations: Foundations) -> None:
+    """ "Move all cards from tableau to foundations when game is won."""
+    return None

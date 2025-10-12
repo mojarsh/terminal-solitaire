@@ -209,14 +209,17 @@ class Game:
         show_top_card_in_hand(self.hand)
 
     def _check_if_game_won(self) -> None:
-        combined_foundations = (
-            self.foundation_board.spade_foundations
-            + self.foundation_board.club_foundations
-            + self.foundation_board.heart_foundations
-            + self.foundation_board.diamond_foundations
-        )
-
-        if len(combined_foundations) == 52:
+        """Set game won status to True when hand and deck are empty and all cards on tableau are revealed."""
+        tableau_display_status = [
+            value.display_status
+            for _, _, value in self.tableau_board
+            if isinstance(value, Card)
+        ]
+        if (
+            self.hand == []
+            and len(self.deck.cards) == 0
+            and all(tableau_display_status)
+        ):
             self.game_won = True
 
 
