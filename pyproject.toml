@@ -1,19 +1,27 @@
-[tool.poetry]
+[project]
 name = "terminal_solitaire"
 version = "0.1.0"
 description = ""
-authors = ["Joe M"]
+authors = [{ name = "Joe M" }]
+requires-python = "~=3.12"
 readme = "README.md"
 
-[tool.poetry.dependencies]
-python = "^3.12"
+[dependency-groups]
+dev = ["black>=24.8.0,<25"]
+test = [
+    "pytest>=8.3.3,<9",
+    "coverage>=7.6.1,<8",
+]
 
-[tool.poetry.group.dev.dependencies]
-black = "^24.8.0"
+[tool.uv]
+default-groups = [
+    "dev",
+    "test",
+]
 
-[tool.poetry.group.test.dependencies]
-pytest = "^8.3.3"
-coverage = "^7.6.1"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.coverage.run]
 source = ["src/terminal_solitaire"]
@@ -23,7 +31,3 @@ show_missing = true
 
 [tool.pytest.inioptions]
 pythonpath = ["src"]
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
