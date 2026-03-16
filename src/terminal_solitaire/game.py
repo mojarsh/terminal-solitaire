@@ -1,5 +1,6 @@
 from terminal_solitaire.board import Foundations, Tableau
-from terminal_solitaire.renderer import draw_board, show_top_card_in_hand
+from terminal_solitaire.hand import Hand
+from terminal_solitaire.renderer import draw_board
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import Rule, RuleBreakError
 import sys
@@ -41,7 +42,7 @@ class Game:
     ) -> None:
         self.tableau_board = tableau
         self.foundation_board = foundations
-        self.hand = []
+        self.hand = Hand()
         self.deck = deck
         self.rules = rules
         self.game_won = False
@@ -70,8 +71,7 @@ class Game:
                 draw_board(self.tableau_board, self.foundation_board)
                 self._check_if_game_won()
                 print(
-                    "Hand: ",
-                    " ".join([card.display_value for card in self.hand]),
+                    f"Hand: {self.hand.display()}",
                     f" Cards in deck: {len(self.deck.cards)}",
                 )
 
@@ -151,7 +151,7 @@ class Game:
     def _hand_action(self) -> None:
         """Handles operations when hand action is selected by user."""
 
-        if self.hand == []:
+        if self.hand.is_empty:
             raise EmptyHandError
 
         hand_movement_input = str(
@@ -159,7 +159,7 @@ class Game:
         ).strip()
 
         if hand_movement_input == "f":
-            first_card_in_hand = self.hand[0]
+            first_card_in_hand = self.hand.top()
             last_card_on_foundations = (
                 self.foundation_board.check_last_card_on_foundations(first_card_in_hand)
             )
@@ -168,7 +168,7 @@ class Game:
                 last_card_on_foundations,
                 hand_movement_input,
             )
-            self.hand.pop(0)
+            self.hand.pop()
             self.foundation_board.move_card_to_foundations(first_card_in_hand)
         elif hand_movement_input == "t":
             move_to = int(input("Enter the destination column: "))
@@ -191,18 +191,16 @@ class Game:
                 first_card_in_hand, coordinates=to_coordinates
             )
 
-        show_top_card_in_hand(self.hand)
 
     def _draw_action(self) -> None:
         """Handles operations when draw action is selected by user."""
-        if len(self.deck.cards) == 0 and self.hand == []:
+        if len(self.deck.cards) == 0 and self.hand.is_empty:
             raise EmptyDeckError
 
-        elif self.hand != []:
-            [self.deck.cards.insert(0, card) for card in self.hand[::-1]]
+        if not self.hand.is_empty:
+            self.hand.return_to_deck(self.deck)
 
-        self.hand = self.deck.deal(3)
-        show_top_card_in_hand(self.hand)
+        self.hand.draw(self.deck.deal(3))
 
     def _check_if_game_won(self) -> None:
         """Set game won status to True when hand and deck are empty and all cards on tableau are revealed."""
@@ -217,7 +215,6 @@ class Game:
             and all(tableau_display_status)
         ):
             self.game_won = True
-
 
 def _display_rules() -> None:
     print(GAME_RULES)
