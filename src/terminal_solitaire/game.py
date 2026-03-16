@@ -1,10 +1,10 @@
+import sys
 from terminal_solitaire.board import Foundations, Tableau
 from terminal_solitaire.hand import Hand
 from terminal_solitaire.config import GameConfig
 from terminal_solitaire.renderer import draw_board
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import RuleBreakError
-import sys
 
 WELCOME_MESSAGE = """
 Welcome to Terminal Solitaire! 
@@ -74,7 +74,7 @@ class Game:
                 print(
                     f"Hand: {self.hand.display()}",
                     f" Cards in deck: {len(self.deck.cards)}",
-                )game
+                )
 
             except (
                 ActionInputError,
