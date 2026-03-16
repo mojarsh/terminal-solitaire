@@ -3,25 +3,22 @@ name = "terminal_solitaire"
 version = "0.1.0"
 description = ""
 authors = [{ name = "Joe M" }]
-requires-python = "~=3.12"
+requires-python = "~=3.12.0"
 readme = "README.md"
 
 [dependency-groups]
 dev = ["black>=24.8.0,<25"]
-test = [
-    "pytest>=8.3.3,<9",
-    "coverage>=7.6.1,<8",
-]
+test = ["pytest>=8.3.3,<9", "coverage>=7.6.1,<8"]
 
 [tool.uv]
-default-groups = [
-    "dev",
-    "test",
-]
+default-groups = ["dev", "test"]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/terminal_solitaire"]
 
 [tool.coverage.run]
 source = ["src/terminal_solitaire"]
