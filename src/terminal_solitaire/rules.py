@@ -4,6 +4,12 @@ from terminal_solitaire.deck import Card, Values
 
 type Rule = Callable[[Card, Card | None], bool]
 
+def same_suit_foundation_rule(
+        card_to_move: Card, card_at_destination: Card | None
+) -> bool:
+    if card_at_destination is None:
+        return True
+    return card_to_move.suit == card_at_destination.suit
 
 def alternating_colour_rule(
     card_to_move: Card, card_at_destination: Card | None

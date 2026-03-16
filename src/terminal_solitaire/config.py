@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from terminal_solitaire.rules import (
     Rule,
+    same_suit_foundation_rule,
     alternating_colour_rule,
     higher_value_foundation_rule,
     king_to_empty_space_rule,
@@ -9,7 +10,10 @@ from terminal_solitaire.rules import (
 
 def _default_rules() -> dict[str, list[Rule]]:
     return {
-        "foundation": [higher_value_foundation_rule],
+        "foundation": [
+            same_suit_foundation_rule,
+            higher_value_foundation_rule
+        ],
         "tableau": [
             alternating_colour_rule,
             lower_value_rule,
