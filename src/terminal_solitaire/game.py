@@ -3,7 +3,7 @@ from terminal_solitaire.hand import Hand
 from terminal_solitaire.config import GameConfig
 from terminal_solitaire.renderer import draw_board
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
-from terminal_solitaire.rules import Rule, RuleBreakError
+from terminal_solitaire.rules import RuleBreakError
 import sys
 
 WELCOME_MESSAGE = """
@@ -74,7 +74,7 @@ class Game:
                 print(
                     f"Hand: {self.hand.display()}",
                     f" Cards in deck: {len(self.deck.cards)}",
-                )
+                )game
 
             except (
                 ActionInputError,
@@ -232,11 +232,11 @@ def _quit_game() -> None:
         sys.exit(0)
 
 
-def _validate_user_input(input: str | int) -> None:
-    if isinstance(input, int) and input not in range(7):
-        raise ColumnInputError(input)
-    elif isinstance(input, str) and input not in ["t", "f", "d", "h", "q", "r"]:
-        raise ActionInputError(input)
+def _validate_user_input(user_input: str | int) -> None:
+    if isinstance(user_input, int) and user_input not in range(7):
+        raise ColumnInputError(user_input)
+    elif isinstance(user_input, str) and user_input not in ["t", "f", "d", "h", "q", "r"]:
+        raise ActionInputError(user_input)
 
 
 class ActionInputError(Exception):
