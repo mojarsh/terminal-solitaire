@@ -94,7 +94,7 @@ class Game:
             print("\nCongratulations, you won!")
 
     def _apply_rules(
-        self, card_to_move: Card, card_at_destination: Card, action_input: str
+        self, card_to_move: Card, card_at_destination: Card | None, action_input: str
     ) -> None:
         if action_input == "f":
             rules = self.config.rules["foundation"]
@@ -118,6 +118,9 @@ class Game:
         last_card_on_tableau = self.tableau_board.select_card_on_board(
             last_card_coordinates
         )
+        if last_card_coordinates is None or last_card_on_tableau is None:
+
+            raise ColumnInputError(move_from)
         last_card_on_foundations = self.foundation_board.check_last_card_on_foundations(
             last_card_on_tableau
         )
