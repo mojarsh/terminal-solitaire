@@ -13,7 +13,7 @@ class Board(ABC):
     columns: int
 
     @abstractmethod
-    def __iter__(self) -> Generator[int, int, str | Card]:
+    def __iter__(self) -> Generator[tuple[int, int, str | Card], None, None]:
         pass
 
 
@@ -24,7 +24,7 @@ class Foundations(Board):
     club_foundations: list[Card] = field(default_factory=list)
     diamond_foundations: list[Card] = field(default_factory=list)
 
-    def __iter__(self) -> Generator[int, int, str | Card]:
+    def __iter__(self) -> Generator[tuple[int, int, str | Card], None, None]:
         for key, value in self.board.items():
             row = key[0]
             column = key[1]
@@ -60,7 +60,7 @@ class Foundations(Board):
 
 @dataclass
 class Tableau(Board):
-    def __iter__(self) -> Generator[int, int, str | Card]:
+    def __iter__(self) -> Generator[tuple[int, int, str | Card], None, None]:
         for key, value in self.board.items():
             row = key[0]
             column = key[1]
@@ -70,8 +70,7 @@ class Tableau(Board):
         dealt_cards = [
             deck.deal(number_of_cards=self.columns - i) for i in range(self.columns)
         ]
-        for row in dealt_cards:
-            row_index = dealt_cards.index(row)
+        for row_index, row in enumerate(dealt_cards):
             for idx, card in enumerate(row):
                 if idx == 0:
                     card.display_status = True
