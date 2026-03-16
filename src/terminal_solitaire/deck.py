@@ -87,9 +87,10 @@ def build_deck() -> Deck:
     return Deck(cards)
 
 
-def shuffle_deck(deck: Deck) -> Deck:
+def shuffle_deck(deck: Deck, seed: int | None = None) -> Deck:
     """Shuffles given deck using shuffle method from random library."""
-    cards = deck.cards
+    cards = deck.cards.copy()
+    random.seed(seed)
     random.shuffle(cards)
 
     return Deck(cards)
