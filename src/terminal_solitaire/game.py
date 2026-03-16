@@ -206,17 +206,14 @@ class Game:
         self.hand.draw(self.deck.deal(3))
 
     def _check_if_game_won(self) -> None:
-        """Set game won status to True when hand and deck are empty and all cards on tableau are revealed."""
-        tableau_display_status = [
-            value.display_status
-            for _, _, value in self.tableau_board
-            if isinstance(value, Card)
-        ]
-        if (
-            self.hand == []
-            and len(self.deck.cards) == 0
-            and all(tableau_display_status)
-        ):
+        """Set game status to won if all cards are on foundations."""
+        total_on_foundations = sum([
+            len(self.foundation_board.spade_foundations),
+            len(self.foundation_board.heart_foundations),
+            len(self.foundation_board.club_foundations),
+            len(self.foundation_board.diamond_foundations),
+        ])
+        if total_on_foundations == 52:
             self.game_won = True
 
 def _display_rules() -> None:
