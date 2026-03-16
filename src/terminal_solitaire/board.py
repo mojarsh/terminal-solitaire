@@ -95,13 +95,19 @@ class Tableau(Board):
         else:
             return None
 
-    def get_stack_of_revealed_cards(self, column_index) -> dict[tuple:Card]:
+    def get_stack_of_revealed_cards(self, column_index) -> dict[tuple, Card]:
         first_card = self.find_coordinates_of_first_revealed_card(column_index)
         last_card = self.find_coordinates_of_last_card(column_index)
+        if first_card is None or last_card is None:
+            return {}
         coordinate_list = [
             (i, column_index) for i in range(first_card[0], last_card[0] + 1)
         ]
-        return {c: self.select_card_on_board(c) for c in coordinate_list}
+        return {
+            c: card
+            for c in coordinate_list
+            if (card := self.select_card_on_board(c)) is not None
+        }
 
     def find_coordinates_of_last_card(
         self, column_index: int
