@@ -245,11 +245,13 @@ class ActionInputError(Exception):
         self.message = (
             f"Action must be 't', 'f', 'd', 'h', 'r' or 'q', not {self.input}"
         )
+        super().__init__(self.message)
 
 
 class EmptyHandError(Exception):
     def __init__(self):
         self.message = "There are no cards in your hand."
+        super().__init__(self.message)
 
 
 class ColumnInputError(Exception):
@@ -258,3 +260,4 @@ class ColumnInputError(Exception):
         self.message = (
             f"Column input must be a number between 0 and 6, not {self.input}"
         )
+        super().__init__(self.message)

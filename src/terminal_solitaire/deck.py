@@ -9,6 +9,7 @@ class EmptyDeckError(Exception):
         self.message = (
             "You have no more cards to draw from the deck, try another action!"
         )
+        super().__init__(self.message)
 
 
 class Suits(StrEnum):

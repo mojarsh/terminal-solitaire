@@ -60,7 +60,7 @@ def lower_value_rule(card_to_move: Card, card_at_destination: Card | None) -> bo
 def king_to_empty_space_rule(
     card_to_move: Card, card_at_destination: Card | None
 ) -> bool:
-    if card_to_move.value is Values.KING and card_at_destination is None:
+    if card_to_move.value == Values.KING and card_at_destination is None:
         return True
     elif card_at_destination is not None:
         return True
@@ -71,7 +71,7 @@ def king_to_empty_space_rule(
 def _check_if_card_is_ace(card: Card | None) -> bool:
     if card is None:
         return False
-    elif card.value is Values.ACE:
+    elif card.value == Values.ACE:
         return True
     else:
         return False
@@ -80,3 +80,4 @@ def _check_if_card_is_ace(card: Card | None) -> bool:
 class RuleBreakError(Exception):
     def __init__(self):
         self.message = "Invalid move, try another one!"
+        super().__init__(self.message)
