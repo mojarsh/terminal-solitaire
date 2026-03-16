@@ -1,5 +1,6 @@
 from terminal_solitaire.board import Foundations, Tableau
 from terminal_solitaire.hand import Hand
+from terminal_solitaire.config import GameConfig
 from terminal_solitaire.renderer import draw_board
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import Rule, RuleBreakError
@@ -38,13 +39,13 @@ class Game:
         tableau: Tableau,
         foundations: Foundations,
         deck: Deck,
-        rules: dict[str, list[Rule]],
+        config: GameConfig
     ) -> None:
         self.tableau_board = tableau
         self.foundation_board = foundations
         self.hand = Hand()
         self.deck = deck
-        self.rules = rules
+        self.config = config
         self.game_won = False
         self.actions = {
             "f": self._foundation_action,
@@ -96,9 +97,11 @@ class Game:
         self, card_to_move: Card, card_at_destination: Card, action_input: str
     ) -> None:
         if action_input == "f":
-            rules = self.rules["foundation"]
+            rules = self.config.rules["foundation"]
         elif action_input in ["t", "h"]:
-            rules = self.rules["tableau"]
+            rules = self.config.rules["tableau"]
+        else:
+            raise ValueError(f"Unknown action input for rules: {action_input!r}")
 
         for rule in rules:
             if not rule(card_to_move, card_at_destination):
