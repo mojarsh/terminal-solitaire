@@ -1,9 +1,5 @@
-from terminal_solitaire.board import (
-    Foundations,
-    Tableau,
-    draw_board,
-    show_top_card_in_hand,
-)
+from terminal_solitaire.board import Foundations, Tableau
+from terminal_solitaire.renderer import draw_board, show_top_card_in_hand
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import Rule, RuleBreakError
 import sys
