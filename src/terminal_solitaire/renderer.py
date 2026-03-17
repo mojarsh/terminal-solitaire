@@ -24,6 +24,16 @@ def _card_text(value: str | Card) -> Text:
         return text
     return Text(str(value))
 
+def _build_hand_text(hand_str: str) -> Text:
+    text = Text("Hand: ")
+    for card in hand_str.split():
+        # last character is the suit symbol
+        if card[-1] in (Suits.HEARTS, Suits.DIAMONDS):
+            text.append(card + " ", style="bold red")
+        else:
+            text.append(card + " ")
+    return text
+
 def _build_foundations_table(foundations: Foundations) -> Table:
     table = Table(box=box.SIMPLE, padding=(0, 1), show_header=True)
     for col in range(foundations.columns):
@@ -73,14 +83,14 @@ def build_layout(
     )
     layout["foundations"].update(_build_foundations_table(foundations))
     layout["tableau"].update(_build_tableau_table(tableau))
-
-    status_parts = [f"Hand: {hand_str}", f"Deck: {deck_count}"]
+    status = _build_hand_text(hand_str)
+    status.append(f"  ·  Deck: {deck_count}")
     if seed is not None:
-        status_parts.append(f"Seed: {seed}")
+        status.append(f"  ·  Seed: {seed}")
     if message:
-        status_parts.append(f"  {message}")
+        status.append(f"  ·  {message}", style="dim")
 
-    layout["status"].update(Text("  ·  ".join(status_parts)))
+    layout["status"].update(status)
     return layout
 
 class Renderer:
