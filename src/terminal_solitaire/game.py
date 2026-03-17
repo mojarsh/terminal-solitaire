@@ -5,6 +5,7 @@ from terminal_solitaire.config import GameConfig
 from terminal_solitaire.renderer import draw_board
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import RuleBreakError
+from terminal_solitaire.input_handler import InputHandler
 
 WELCOME_MESSAGE = """
 Welcome to Terminal Solitaire! 
@@ -39,7 +40,8 @@ class Game:
         tableau: Tableau,
         foundations: Foundations,
         deck: Deck,
-        config: GameConfig
+        config: GameConfig,
+        input_handler: InputHandler | None = None
     ) -> None:
         self.tableau_board = tableau
         self.foundation_board = foundations
@@ -52,9 +54,10 @@ class Game:
             "t": self._tableau_action,
             "h": self._hand_action,
             "d": self._draw_action,
-            "q": _quit_game,
+            "q": self._quit_game,
             "r": _display_rules,
         }
+        self.input_handler = input_handler or InputHandler()
 
     def initialise_game(self) -> None:
         shuffled = shuffle_deck(self.deck)
@@ -66,7 +69,7 @@ class Game:
     def run_game_loop(self) -> None:
         while not self.game_won:
             try:
-                action_input = str(input("\nSelect an action for this turn: ")).strip()
+                action_input = self.input_handler.get_action()
                 _validate_user_input(action_input)
                 self.actions[action_input]()
                 draw_board(self.tableau_board, self.foundation_board)
@@ -110,7 +113,7 @@ class Game:
     def _foundation_action(self) -> None:
         """Handles operations when foundation action is selected by user."""
 
-        move_from = int(input("Enter the column of the card to move: "))
+        move_from = self.input_handler.get_column("Enter the column of the card to move: ")
         _validate_user_input(move_from)
         last_card_coordinates = self.tableau_board.find_coordinates_of_last_card(
             move_from
@@ -133,10 +136,12 @@ class Game:
     def _tableau_action(self) -> None:
         """Handles operations when tableau action is selected by user."""
 
-        move_from = int(input("Enter the column of the card to move: "))
+        move_from = self.input_handler.get_column("Enter the column of the card to move: ")
         _validate_user_input(move_from)
         cards_to_move = self.tableau_board.get_stack_of_revealed_cards(move_from)
-        move_to = int(input("Enter the destination column: "))
+        if not cards_to_move:
+            raise ColumnInputError(move_from)
+        move_to = self.input_handler.get_column("Enter the destination column: ")
         _validate_user_input(move_to)
         card_at_destination_coordinates = (
             self.tableau_board.find_coordinates_of_last_card(move_to)
@@ -160,9 +165,7 @@ class Game:
         if self.hand.is_empty:
             raise EmptyHandError
 
-        hand_movement_input = str(
-            input("Enter 'f' to move to foundations, 't' to move to tableau: ")
-        ).strip()
+        hand_movement_input = self.input_handler.get_hand_movement()
 
         if hand_movement_input == "f":
             first_card_in_hand = self.hand.top()
@@ -177,7 +180,7 @@ class Game:
             self.hand.pop()
             self.foundation_board.move_card_to_foundations(first_card_in_hand)
         elif hand_movement_input == "t":
-            move_to = int(input("Enter the destination column: "))
+            move_to = self.input_handler.get_column("Enter the destination column: ")
             _validate_user_input(move_to)
             card_at_destination_coordinates = (
                 self.tableau_board.find_coordinates_of_last_card(move_to)
@@ -185,13 +188,13 @@ class Game:
             card_at_destination = self.tableau_board.select_card_on_board(
                 card_at_destination_coordinates
             )
-            first_card_in_hand = self.hand[0]
+            first_card_in_hand = self.hand.top()
             self._apply_rules(
                 first_card_in_hand,
                 card_at_destination,
                 hand_movement_input,
             )
-            first_card_in_hand = self.hand.pop(0)
+            first_card_in_hand = self.hand.pop()
             to_coordinates = self.tableau_board.find_coordinates_of_next_space(move_to)
             self.tableau_board.place_card_on_board(
                 first_card_in_hand, coordinates=to_coordinates
@@ -219,17 +222,18 @@ class Game:
         if total_on_foundations == 52:
             self.game_won = True
 
+    def _quit_game(self) -> None:
+        """Handles operations when quit action is selected by user."""
+
+        user_sure = self.input_handler.get_quit_confirmation()
+        if user_sure == "y":
+            print("\nBetter luck next time...")
+            sys.exit(0)
+
 def _display_rules() -> None:
     print(GAME_RULES)
 
 
-def _quit_game() -> None:
-    """Handles operations when quit action is selected by user."""
-
-    user_sure = input("Are you sure you want to quit (y/n): ")
-    if user_sure == "y":
-        print("\nBetter luck next time...")
-        sys.exit(0)
 
 
 def _validate_user_input(user_input: str | int) -> None:
