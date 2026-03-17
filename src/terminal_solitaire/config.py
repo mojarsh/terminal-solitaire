@@ -26,5 +26,6 @@ class GameConfig:
         draw_count: int = 3
         pass_limit: int | None = None
         allow_undo: bool = True
+        seed: int | None = None
         rules: dict[str, list[Rule]] = field(default_factory=_default_rules)
 

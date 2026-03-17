@@ -44,6 +44,7 @@ class Foundations(Board):
             return None
 
     def move_card_to_foundations(self, card: Card) -> None:
+        card.display_status = True
         if card.suit == Suits.SPADES:
             self.spade_foundations.append(card)
             self.board[(0, 3)] = self.spade_foundations[-1]

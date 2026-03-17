@@ -1,8 +1,9 @@
 import sys
+import random
 from terminal_solitaire.board import Foundations, Tableau
 from terminal_solitaire.hand import Hand
 from terminal_solitaire.config import GameConfig
-from terminal_solitaire.renderer import draw_board
+from terminal_solitaire.renderer import Renderer
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import RuleBreakError
 from terminal_solitaire.input_handler import InputHandler
@@ -11,8 +12,6 @@ WELCOME_MESSAGE = """
 Welcome to Terminal Solitaire! 
 
 Your goal is to move all cards to the four foundation piles, arranged by suit and ascending rank (Ace to King).
-
-Press 'r' if you need to see the rules and controls.
 """
 
 GAME_RULES = """
@@ -41,6 +40,7 @@ class Game:
         foundations: Foundations,
         deck: Deck,
         config: GameConfig,
+        renderer: Renderer | None = None,
         input_handler: InputHandler | None = None
     ) -> None:
         self.tableau_board = tableau
@@ -55,16 +55,34 @@ class Game:
             "h": self._hand_action,
             "d": self._draw_action,
             "q": self._quit_game,
-            "r": _display_rules,
+            "r": self._display_rules,
         }
-        self.input_handler = input_handler or InputHandler()
+        self.renderer = renderer or Renderer()
+        self.input_handler = input_handler or InputHandler(self.renderer)
 
     def initialise_game(self) -> None:
-        shuffled = shuffle_deck(self.deck)
+        if self.config.seed is None:
+            self.config.seed = random.randint(0, 10_000_000)
+        shuffled = shuffle_deck(self.deck, seed=self.config.seed)
         self.deck = shuffled
         self.tableau_board.deal_initial_tableau(self.deck)
-        print(WELCOME_MESSAGE)
-        draw_board(self.tableau_board, self.foundation_board)
+
+        self.renderer.show_welcome(WELCOME_MESSAGE)
+        while True:
+            response = self.input_handler.wait_for_enter()
+            if response.strip().lower() == "r":
+                self.renderer.show_rules(GAME_RULES)
+            else:
+                break
+
+        self.renderer.start()
+        self.renderer.refresh(
+            self.tableau_board,
+            self.foundation_board,
+            self.hand.display(),
+            len(self.deck.cards),
+            self.config.seed,
+        )
 
     def run_game_loop(self) -> None:
         while not self.game_won:
@@ -72,12 +90,14 @@ class Game:
                 action_input = self.input_handler.get_action()
                 _validate_user_input(action_input)
                 self.actions[action_input]()
-                draw_board(self.tableau_board, self.foundation_board)
-                self._check_if_game_won()
-                print(
-                    f"Hand: {self.hand.display()}",
-                    f" Cards in deck: {len(self.deck.cards)}",
+                self.renderer.refresh(
+                    self.tableau_board,
+                    self.foundation_board,
+                    self.hand.display(),
+                    len(self.deck.cards),
+                    self.config.seed,
                 )
+                self._check_if_game_won()
 
             except (
                 ActionInputError,
@@ -86,15 +106,13 @@ class Game:
                 EmptyHandError,
                 EmptyDeckError,
             ) as e:
-                print(e.message)
-                pass
+                self.renderer.show_message(e.args[0])
 
             except ValueError:
-                print("Column input must be an integer!")
-                pass
+                self.renderer.show_message("Column input must be an integer!")
 
-        if self.game_won:
-            print("\nCongratulations, you won!")
+        self.renderer.stop()
+        self.renderer.show_win_message("\nCongratulations, you won!")
 
     def _apply_rules(
         self, card_to_move: Card, card_at_destination: Card | None, action_input: str
@@ -227,14 +245,14 @@ class Game:
 
         user_sure = self.input_handler.get_quit_confirmation()
         if user_sure == "y":
-            print("\nBetter luck next time...")
+            self.renderer.stop()
+            self.renderer.show_quit_message("\nBetter luck next time...")
             sys.exit(0)
 
-def _display_rules() -> None:
-    print(GAME_RULES)
-
-
-
+    def _display_rules(self) -> None:
+        with self.renderer.paused():
+                self.renderer.show_rules(GAME_RULES)
+                self.input_handler.wait_for_enter()
 
 def _validate_user_input(user_input: str | int) -> None:
     if isinstance(user_input, int) and user_input not in range(7):

@@ -29,6 +29,9 @@ class StubInputHandler(InputHandler):
     def get_quit_confirmation(self) -> str:
         return next(self._responses)
 
+    def wait_for_enter(self) -> str:
+        return "" # simulates user pressing enter
+
 @pytest.fixture
 def game() -> Game:
     tableau = generate_tableau(20, 7)
