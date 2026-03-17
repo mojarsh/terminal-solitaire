@@ -15,7 +15,8 @@ def main() -> None:
     deck = build_deck()
     renderer = Renderer()
     input_handler = InputHandler(renderer)
-    game = Game(tableau, foundations, deck, GameConfig(), renderer, input_handler)
+    config = GameConfig(seed=args.seed)
+    game = Game(tableau, foundations, deck, config, renderer, input_handler)
     game.initialise_game()
     game.run_game_loop()
 
