@@ -1,28 +1,39 @@
+import blessed
+from typing import Callable
 from terminal_solitaire.renderer import console, Renderer
 
-class InputHandler:
-    def __init__(self, renderer: "Renderer | None" = None) -> None:
-        self._renderer = renderer
+term = blessed.Terminal()
 
-    def _prompt(self, prompt: str) -> str:
-        if self._renderer:
-            self._renderer.stop()
-        result = console.input(prompt)
-        if self._renderer:
-            self._renderer.start()
-        return result
+class InputHandler:
+    def __init__(self, renderer: Renderer, on_prompt: Callable[[str], None] | None = None) -> None:
+        self._renderer = renderer
+        self._on_prompt = on_prompt
+
+    def _show_and_refresh(self, prompt: str) -> None:
+        self._renderer.show_prompt(prompt)
+        if self._on_prompt:
+            self._on_prompt(prompt)
 
     def get_action(self) -> str:
-        return self._prompt("\nSelect an action for this turn: ").strip()
+        self._show_and_refresh("Select an action (t/f/d/h/r/q)")
+        with term.cbreak():
+            return str(term.inkey())
 
     def get_column(self, prompt: str) -> int:
-        return int(self._prompt(prompt))
+        self._show_and_refresh(prompt)
+        with term.cbreak():
+            return int(str(term.inkey()))
 
     def get_hand_movement(self) -> str:
-        return self._prompt("Enter 'f' to move to foundations, 't' to move to tableau: ").strip()
+        self._show_and_refresh("Select destination (f/t)")
+        with term.cbreak():
+            return str(term.inkey())
 
     def get_quit_confirmation(self) -> str:
-        return self._prompt("Are you sure you want to quit (y/n): ")
+        self._show_and_refresh("Are you sure you want to quit? (y/n)")
+        with term.cbreak():
+            return str(term.inkey())
 
-    def wait_for_enter(self) -> None:
-        return console.input("\nPress Enter to start, or 'r' to view the rules: ")
+    def wait_for_enter(self) -> str:
+        return console.input("\nPress Enter to start, or 'r' to view the rules")
+

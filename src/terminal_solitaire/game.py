@@ -131,7 +131,7 @@ class Game:
     def _foundation_action(self) -> None:
         """Handles operations when foundation action is selected by user."""
 
-        move_from = self.input_handler.get_column("Enter the column of the card to move: ")
+        move_from = self.input_handler.get_column("Enter the column of the card to move")
         _validate_user_input(move_from)
         last_card_coordinates = self.tableau_board.find_coordinates_of_last_card(
             move_from
@@ -154,12 +154,12 @@ class Game:
     def _tableau_action(self) -> None:
         """Handles operations when tableau action is selected by user."""
 
-        move_from = self.input_handler.get_column("Enter the column of the card to move: ")
+        move_from = self.input_handler.get_column("Enter the column of the card to move")
         _validate_user_input(move_from)
         cards_to_move = self.tableau_board.get_stack_of_revealed_cards(move_from)
         if not cards_to_move:
             raise ColumnInputError(move_from)
-        move_to = self.input_handler.get_column("Enter the destination column: ")
+        move_to = self.input_handler.get_column("Enter the destination column")
         _validate_user_input(move_to)
         card_at_destination_coordinates = (
             self.tableau_board.find_coordinates_of_last_card(move_to)
@@ -198,7 +198,7 @@ class Game:
             self.hand.pop()
             self.foundation_board.move_card_to_foundations(first_card_in_hand)
         elif hand_movement_input == "t":
-            move_to = self.input_handler.get_column("Enter the destination column: ")
+            move_to = self.input_handler.get_column("Enter the destination column")
             _validate_user_input(move_to)
             card_at_destination_coordinates = (
                 self.tableau_board.find_coordinates_of_last_card(move_to)
@@ -239,6 +239,15 @@ class Game:
         ])
         if total_on_foundations == 52:
             self.game_won = True
+
+    def refresh(self) -> None:
+        self.renderer.refresh(
+            self.tableau_board,
+            self.foundation_board,
+            self.hand.display(),
+            len(self.deck.cards),
+            self.config.seed,
+        )
 
     def _quit_game(self) -> None:
         """Handles operations when quit action is selected by user."""
