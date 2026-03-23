@@ -155,8 +155,9 @@ class Game:
         """Handles operations when tableau action is selected by user."""
 
         move_from = self.input_handler.get_column("Enter the column of the card to move")
+        number_of_cards = self.input_handler.get_number_of_cards("Specify number of cards, then press 'Enter' (leave blank to move full stack)")
         _validate_user_input(move_from)
-        cards_to_move = self.tableau_board.get_stack_of_revealed_cards(move_from)
+        cards_to_move = self.tableau_board.get_stack_of_revealed_cards(move_from, number_of_cards)
         if not cards_to_move:
             raise ColumnInputError(move_from)
         move_to = self.input_handler.get_column("Enter the destination column")

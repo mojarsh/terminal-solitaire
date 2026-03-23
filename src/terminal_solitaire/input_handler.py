@@ -24,6 +24,21 @@ class InputHandler:
         with term.cbreak():
             return int(str(term.inkey()))
 
+    def get_number_of_cards(self, prompt: str) -> int | None:
+        self._show_and_refresh(prompt)
+        number_input: list[str] = []
+        with term.cbreak():
+            key = term.inkey()
+            while key.name != "KEY_ENTER":
+                if key.name == "KEY_BACKSPACE" and number_input:
+                    number_input.pop()
+                elif str(key).isdigit():
+                    number_input.append(str(key))
+                # update prompt to show what's been typed so far
+                self._show_and_refresh(f"{prompt} {''.join(number_input)}")
+                key = term.inkey()
+        return int("".join(number_input)) if number_input else None
+
     def get_hand_movement(self) -> str:
         self._show_and_refresh("Select destination (f/t)")
         with term.cbreak():

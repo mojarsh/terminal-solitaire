@@ -107,14 +107,6 @@ def test_hand_action_removes_card_from_hand(game: Game) -> None:
 
 
 # ── _foundation_action ────────────────────────────────────────────────────────
-def test_tableau_action_empty_column_raises(game: Game) -> None:
-    for row in range(game.tableau_board.rows + 1):
-        game.tableau_board.remove_card_from_board((row, 0))
-    game.input_handler = StubInputHandler(["0"])
-    with pytest.raises(ColumnInputError):
-        game._tableau_action()
-
-
 def test_foundation_action_valid_move(game: Game) -> None:
     # place an ace at the top of column 0 to guarantee a valid foundation move
     ace = Card(Suits.HEARTS, Values.ACE, "Red", display_status=True)
@@ -152,26 +144,21 @@ def test_foundation_action_reveals_next_card(game: Game) -> None:
 
 def test_tableau_action_invalid_move_raises(game: Game) -> None:
     # moving from a column onto itself should fail the rule check
-    game.input_handler = StubInputHandler(["0", "0"])
+    game.input_handler = StubInputHandler(["0", "1", "0"])
     with pytest.raises(RuleBreakError):
         game._tableau_action()
 
-
 def test_tableau_action_valid_move_updates_board(game: Game) -> None:
-    # set up a guaranteed valid move: red 7 onto black 8
     seven = Card(Suits.HEARTS, Values.SEVEN, "Red", display_status=True)
     eight = Card(Suits.SPADES, Values.EIGHT, "Black", display_status=True)
-    # clear columns 0 and 1 then place known cards
     for row in range(game.tableau_board.rows + 1):
         game.tableau_board.remove_card_from_board((row, 0))
         game.tableau_board.remove_card_from_board((row, 1))
     game.tableau_board.place_card_on_board(seven, (0, 0))
     game.tableau_board.place_card_on_board(eight, (0, 1))
-    game.input_handler = StubInputHandler(["0", "1"])
+    game.input_handler = StubInputHandler(["0", "", "1"])  # col, card count (full stack), dest
     game._tableau_action()
-    # seven should now be in column 1
     assert game.tableau_board.find_coordinates_of_last_card(1) == (1, 1)
-
 
 def test_tableau_action_reveals_card_after_move(game: Game) -> None:
     hidden = Card(Suits.CLUBS, Values.NINE, "Black", display_status=False)
@@ -183,7 +170,7 @@ def test_tableau_action_reveals_card_after_move(game: Game) -> None:
     game.tableau_board.place_card_on_board(hidden, (0, 0))
     game.tableau_board.place_card_on_board(seven, (1, 0))
     game.tableau_board.place_card_on_board(eight, (0, 1))
-    game.input_handler = StubInputHandler(["0", "1"])
+    game.input_handler = StubInputHandler(["0", "1", "1"])
     game._tableau_action()
     assert hidden.display_status is True
 
@@ -191,7 +178,7 @@ def test_tableau_action_reveals_card_after_move(game: Game) -> None:
 def test_tableau_action_empty_column_raises(game: Game) -> None:
     for row in range(game.tableau_board.rows + 1):
         game.tableau_board.remove_card_from_board((row, 0))
-    game.input_handler = StubInputHandler(["0", "1"])
+    game.input_handler = StubInputHandler(["0", "1", "1"])
     # empty column has no revealed stack — get_stack_of_revealed_cards returns {}
     # first_card in the action will be None after the stack check
     with pytest.raises((RuleBreakError, ColumnInputError)):

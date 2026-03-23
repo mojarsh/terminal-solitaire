@@ -78,9 +78,8 @@ class Tableau(Board):
 
                 self.board[(row_index, idx + row_index)] = card
 
-    def find_coordinates_of_first_revealed_card(
-        self, column_index: int
-    ) -> tuple[int, int] | None:
+    def get_first_card_coordinates(self, column_index: int, row_offset: int | None = None) -> tuple[int, int] | None:
+
         row_indices = [
             row
             for row, column, value in self
@@ -89,14 +88,20 @@ class Tableau(Board):
             and value.display_status
         ]
         if row_indices != []:
-            first_row_index = min(row_indices)
+            if row_offset is None:
+                first_row_index = min(row_indices)
+                return (first_row_index, column_index)
+
+            # row_offset is the number of cards to be moved
+            # adjusted_offset accounts for 0 indexing of row_indices
+            adjusted_offset = row_offset - 1
+            first_row_index = max(row_indices) - adjusted_offset
             return (first_row_index, column_index)
 
-        else:
-            return None
+        return None
 
-    def get_stack_of_revealed_cards(self, column_index) -> dict[tuple, Card]:
-        first_card = self.find_coordinates_of_first_revealed_card(column_index)
+    def get_stack_of_revealed_cards(self, column_index: int, row_index: int | None = None) -> dict[tuple, Card]:
+        first_card = self.get_first_card_coordinates(column_index, row_index)
         last_card = self.find_coordinates_of_last_card(column_index)
         if first_card is None or last_card is None:
             return {}
