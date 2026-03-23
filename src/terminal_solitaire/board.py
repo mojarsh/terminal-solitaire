@@ -8,12 +8,12 @@ from terminal_solitaire.deck import Card, Deck, Suits
 
 @dataclass
 class Board(ABC):
-    board: dict[tuple, str | Card]
+    board: dict[tuple[int, int], str | Card]
     rows: int
     columns: int
 
     @abstractmethod
-    def __iter__(self) -> Generator[tuple[int, int, str | Card], None, None]:
+    def __iter__(self) -> Generator[tuple[int, int, str | Card]]:
         pass
 
 
@@ -100,7 +100,7 @@ class Tableau(Board):
 
         return None
 
-    def get_stack_of_revealed_cards(self, column_index: int, row_index: int | None = None) -> dict[tuple, Card]:
+    def get_stack_of_revealed_cards(self, column_index: int, row_index: int | None = None) -> dict[tuple[int, int], Card | str]:
         first_card = self.get_first_card_coordinates(column_index, row_index)
         last_card = self.find_coordinates_of_last_card(column_index)
         if first_card is None or last_card is None:
@@ -136,7 +136,7 @@ class Tableau(Board):
         else:
             return (last_card[0] + 1, column_index)
 
-    def select_card_on_board(self, coordinates: tuple[int, int] | None) -> Card | None:
+    def select_card_on_board(self, coordinates: tuple[int, int] | None) -> Card | str | None:
         if coordinates is None:
             return None
         else:
@@ -159,7 +159,9 @@ def generate_tableau(rows: int, columns: int) -> Tableau:
     element_rows = [_ for _ in range(rows + 1)]
     element_columns = [_ for _ in range(columns)]
 
-    board = {k: "  " for k in tuple(itertools.product(element_rows, element_columns))}
+    board: dict[tuple[int, int], str | Card] = {
+        k: "  " for k in tuple(itertools.product(element_rows, element_columns))
+    }
     return Tableau(board, rows, columns)
 
 
@@ -167,10 +169,10 @@ def generate_foundations(rows: int, columns: int) -> Foundations:
     element_rows = [_ for _ in range(rows + 1)]
     element_columns = [_ for _ in range(columns)]
 
-    board = {k: "  " for k in tuple(itertools.product(element_rows, element_columns))}
+    board: dict[tuple[int, int], str | Card] = {
+        k: "  " for k in tuple(itertools.product(element_rows, element_columns))
+    }
     return Foundations(board, rows, columns)
-
-
 
 
 def clear_board(tableau: Tableau, foundations: Foundations) -> None:
