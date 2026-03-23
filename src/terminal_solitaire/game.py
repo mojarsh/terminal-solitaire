@@ -1,11 +1,12 @@
 import sys
+import time
 import random
 from terminal_solitaire.board import Foundations, Tableau
 from terminal_solitaire.hand import Hand
 from terminal_solitaire.config import GameConfig
 from terminal_solitaire.renderer import Renderer
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
-from terminal_solitaire.rules import RuleBreakError
+from terminal_solitaire.rules import RuleBreakError, can_move_to_foundations
 from terminal_solitaire.input_handler import InputHandler
 
 WELCOME_MESSAGE = """
@@ -97,6 +98,9 @@ class Game:
                     len(self.deck.cards),
                     self.config.seed,
                 )
+                if self._ready_to_clear_board:
+                    self._clear_board()
+
                 self._check_if_game_won()
 
             except (
@@ -241,6 +245,63 @@ class Game:
         if total_on_foundations == 52:
             self.game_won = True
 
+    @property
+    def _ready_to_clear_board(self) -> bool:
+        tableau_display_status = [
+            value.display_status
+            for _, _, value in self.tableau_board
+            if isinstance(value, Card)
+        ]
+        if (
+            self.hand.is_empty
+            and len(self.deck.cards) == 0
+            and all(tableau_display_status)
+        ):
+            return True
+
+        else:
+            return False
+    
+    def _clear_board(self) -> None:
+        """Move all cards from tableau to foundations when all cards are revealed."""
+        clear_board_confirmation = self.input_handler.get_clear_board_confirmation()
+        
+        if clear_board_confirmation == "y":
+            progress = True
+            while progress and not self.game_won:
+                progress = False
+                for col in range(self.tableau_board.columns):
+                    last_card_coordinates = self.tableau_board.find_coordinates_of_last_card(col)
+                    last_card_coordinates = self.tableau_board.find_coordinates_of_last_card(col)
+                    last_card_on_tableau = self.tableau_board.select_card_on_board(
+                        last_card_coordinates
+                    )
+
+                    if last_card_coordinates is None or not isinstance(last_card_on_tableau, Card):
+                        continue
+                    last_card_on_foundations = self.foundation_board.check_last_card_on_foundations(
+                        last_card_on_tableau
+                    )
+                    can_move = can_move_to_foundations(last_card_on_tableau, last_card_on_foundations, self.config.rules["foundation"])
+
+                    if can_move:
+                        self.foundation_board.move_card_to_foundations(last_card_on_tableau)
+                        self.tableau_board.remove_card_from_board(last_card_coordinates)
+                        reveal_coordinates = self.tableau_board.find_coordinates_of_last_card(col)
+                        self.tableau_board.reveal_card_on_board(reveal_coordinates)
+                        self.renderer.refresh(
+                            self.tableau_board,
+                            self.foundation_board,
+                            self.hand.display(),
+                            len(self.deck.cards),
+                            self.config.seed,
+                        )
+                        time.sleep(0.25)
+                        progress = True
+
+                self._check_if_game_won()
+
+
     def refresh(self) -> None:
         self.renderer.refresh(
             self.tableau_board,
@@ -269,7 +330,6 @@ def _validate_user_input(user_input: str | int) -> None:
         raise ColumnInputError(user_input)
     elif isinstance(user_input, str) and user_input not in ["t", "f", "d", "h", "q", "r"]:
         raise ActionInputError(user_input)
-
 
 class ActionInputError(Exception):
     def __init__(self, input: str):

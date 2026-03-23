@@ -13,7 +13,7 @@ class Board(ABC):
     columns: int
 
     @abstractmethod
-    def __iter__(self) -> Generator[tuple[int, int, str | Card]]:
+    def __iter__(self) -> Generator[tuple[int, int, str | Card], None, None]:
         pass
 
 
@@ -30,18 +30,21 @@ class Foundations(Board):
             column = key[1]
             yield row, column, value
 
-    def check_last_card_on_foundations(self, card: Card) -> Card | None:
-        try:
-            if card.suit == Suits.SPADES:
-                return self.spade_foundations[-1]
-            elif card.suit == Suits.HEARTS:
-                return self.heart_foundations[-1]
-            elif card.suit == Suits.CLUBS:
-                return self.club_foundations[-1]
-            elif card.suit == Suits.DIAMONDS:
-                return self.diamond_foundations[-1]
-        except (IndexError, AttributeError):
-            return None
+    def check_last_card_on_foundations(self, card: str | Card) -> Card | None:
+        if not isinstance(card, str):
+            try:
+                if card.suit == Suits.SPADES:
+                    return self.spade_foundations[-1]
+                elif card.suit == Suits.HEARTS:
+                    return self.heart_foundations[-1]
+                elif card.suit == Suits.CLUBS:
+                    return self.club_foundations[-1]
+                elif card.suit == Suits.DIAMONDS:
+                    return self.diamond_foundations[-1]
+            except (IndexError, AttributeError):
+                return None
+
+        return None
 
     def move_card_to_foundations(self, card: Card) -> None:
         card.display_status = True
@@ -175,6 +178,3 @@ def generate_foundations(rows: int, columns: int) -> Foundations:
     return Foundations(board, rows, columns)
 
 
-def clear_board(tableau: Tableau, foundations: Foundations) -> None:
-    """ "Move all cards from tableau to foundations when game is won."""
-    return None

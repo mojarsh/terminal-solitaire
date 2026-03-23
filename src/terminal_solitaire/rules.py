@@ -4,6 +4,9 @@ from terminal_solitaire.deck import Card, Values
 
 type Rule = Callable[[Card, Card | None], bool]
 
+def can_move_to_foundations(card: Card, last_on_foundations: Card | None, rules: list[Rule]) -> bool:
+    return all(rule(card, last_on_foundations) for rule in rules)
+
 def same_suit_foundation_rule(
         card_to_move: Card, card_at_destination: Card | None
 ) -> bool:
@@ -26,20 +29,18 @@ def higher_value_foundation_rule(
     card_to_move: Card, card_at_destination: Card | None
 ) -> bool:
     is_ace = _check_if_card_is_ace(card_to_move)
-    if card_at_destination is None and not is_ace:
-        return False
-    elif is_ace:
-        return True
-    else:
-        value_index = {value.value: idx for idx, value in enumerate(Values)}
+    value_index = {value.value: idx for idx, value in enumerate(Values)}
+
+    if card_at_destination is not None:
         previous_card_index = value_index[card_at_destination.value]
         current_card_index = value_index[card_to_move.value]
 
         if current_card_index - previous_card_index == 1:
             return True
+    elif card_at_destination is None and is_ace:
+        return True
 
-        else:
-            return False
+    return False
 
 
 def lower_value_rule(card_to_move: Card, card_at_destination: Card | None) -> bool:
@@ -81,3 +82,4 @@ class RuleBreakError(Exception):
     def __init__(self):
         self.message = "Invalid move, try another one!"
         super().__init__(self.message)
+

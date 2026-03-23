@@ -24,6 +24,12 @@ class InputHandler:
         with term.cbreak():
             return int(str(term.inkey()))
 
+    def get_clear_board_confirmation(self) -> str:
+        self._show_and_refresh("All cards revealed! Would you like to clear the board? (y/n)")
+        with term.cbreak():
+            return str(term.inkey())
+
+
     def get_number_of_cards(self, prompt: str) -> int | None:
         self._show_and_refresh(prompt)
         number_input: list[str] = []
