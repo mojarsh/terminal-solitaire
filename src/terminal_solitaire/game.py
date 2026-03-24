@@ -181,7 +181,9 @@ class Game:
         )
 
         first_card = next(iter(cards_to_move.values()))
-        if not isinstance(first_card, Card) or not isinstance(card_at_destination, Card):
+        if not isinstance(first_card, Card) or not isinstance(
+            card_at_destination, Card
+        ):
             raise ColumnInputError(move_from)
         self._apply_rules(first_card, card_at_destination, "t")
         for coordinates, card in cards_to_move.items():
