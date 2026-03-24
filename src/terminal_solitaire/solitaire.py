@@ -6,9 +6,12 @@ from terminal_solitaire.config import GameConfig
 from terminal_solitaire.renderer import Renderer
 from terminal_solitaire.input_handler import InputHandler
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Terminal Solitaire")
-    parser.add_argument("--seed", type=int, default=None, help="Seed for reproducible deals")
+    parser.add_argument(
+        "--seed", type=int, default=None, help="Seed for reproducible deals"
+    )
     args = parser.parse_args()
     tableau = generate_tableau(20, 7)
     foundations = generate_foundations(1, 7)

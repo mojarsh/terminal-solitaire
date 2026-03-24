@@ -1,12 +1,12 @@
 import pytest
-from terminal_solitaire.board import Board, Tableau, generate_tableau
+from terminal_solitaire.board import Tableau, generate_tableau
 from terminal_solitaire.deck import Card, build_deck
-
 
 
 @pytest.fixture
 def tableau() -> Tableau:
     return generate_tableau(13, 7)
+
 
 @pytest.fixture
 def dealt_tableau() -> Tableau:
@@ -14,6 +14,7 @@ def dealt_tableau() -> Tableau:
     t.deal_initial_tableau(build_deck())
 
     return t
+
 
 def test_generated_board_is_correct_size(tableau: Tableau) -> None:
     assert tableau.rows == 13 and tableau.columns == 7

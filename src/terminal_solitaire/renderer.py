@@ -24,6 +24,7 @@ def _card_text(value: str | Card) -> Text:
         return text
     return Text(str(value))
 
+
 def _build_hand_text(hand_str: str) -> Text:
     text = Text("Hand: ")
     for card in hand_str.split():
@@ -33,6 +34,7 @@ def _build_hand_text(hand_str: str) -> Text:
         else:
             text.append(card + " ")
     return text
+
 
 def _build_foundations_panel(foundations: Foundations) -> Panel:
     table = Table(box=box.SIMPLE, padding=(0, 1), show_header=False)
@@ -49,6 +51,7 @@ def _build_foundations_panel(foundations: Foundations) -> Panel:
         row_cells.append(_card_text(found or "  "))
     table.add_row(*row_cells)
     return Panel(table, expand=False)
+
 
 def _build_tableau_panel(tableau: Tableau) -> Panel:
     table = Table(box=box.SIMPLE, padding=(0, 1), show_header=True)
@@ -67,6 +70,7 @@ def _build_tableau_panel(tableau: Tableau) -> Panel:
         table.add_row(*row_cells)
     return Panel(table, expand=False)
 
+
 def build_layout(
     tableau: Tableau,
     foundations: Foundations,
@@ -74,7 +78,7 @@ def build_layout(
     deck_count: int,
     seed: int | None,
     message: str = "",
-    prompt: str = "Select an action (t/f/d/h/r/q)"
+    prompt: str = "Select an action (t/f/d/h/r/q)",
 ) -> Layout:
     layout = Layout()
     layout.split_column(
@@ -96,6 +100,7 @@ def build_layout(
     layout["prompt"].update(Panel(text_prompt, expand=False))
     return layout
 
+
 class Renderer:
     def __init__(self) -> None:
         self._message: str = ""
@@ -103,7 +108,9 @@ class Renderer:
         self._prompt: str = "Select an action (t/f/d/h/r/q)"
 
     def start(self) -> None:
-        self._live = Live(console=console, refresh_per_second=4, vertical_overflow="crop")
+        self._live = Live(
+            console=console, refresh_per_second=4, vertical_overflow="crop"
+        )
         self._live.start()
 
     def stop(self) -> None:
@@ -128,7 +135,13 @@ class Renderer:
     ) -> None:
         if self._live:
             layout = build_layout(
-                tableau, foundations, hand_str, deck_count, seed, self._message, self._prompt
+                tableau,
+                foundations,
+                hand_str,
+                deck_count,
+                seed,
+                self._message,
+                self._prompt,
             )
             self._live.update(layout)
         self._message = ""

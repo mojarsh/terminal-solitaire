@@ -42,7 +42,7 @@ class Game:
         deck: Deck,
         config: GameConfig,
         renderer: Renderer | None = None,
-        input_handler: InputHandler | None = None
+        input_handler: InputHandler | None = None,
     ) -> None:
         self.tableau_board = tableau
         self.foundation_board = foundations
@@ -135,7 +135,9 @@ class Game:
     def _foundation_action(self) -> None:
         """Handles operations when foundation action is selected by user."""
 
-        move_from = self.input_handler.get_column("Enter the column of the card to move")
+        move_from = self.input_handler.get_column(
+            "Enter the column of the card to move"
+        )
         _validate_user_input(move_from)
         last_card_coordinates = self.tableau_board.find_coordinates_of_last_card(
             move_from
@@ -144,7 +146,6 @@ class Game:
             last_card_coordinates
         )
         if last_card_coordinates is None or last_card_on_tableau is None:
-
             raise ColumnInputError(move_from)
         last_card_on_foundations = self.foundation_board.check_last_card_on_foundations(
             last_card_on_tableau
@@ -158,10 +159,16 @@ class Game:
     def _tableau_action(self) -> None:
         """Handles operations when tableau action is selected by user."""
 
-        move_from = self.input_handler.get_column("Enter the column of the card to move")
-        number_of_cards = self.input_handler.get_number_of_cards("Specify number of cards, then press 'Enter' (leave blank to move full stack)")
+        move_from = self.input_handler.get_column(
+            "Enter the column of the card to move"
+        )
+        number_of_cards = self.input_handler.get_number_of_cards(
+            "Specify number of cards, then press 'Enter' (leave blank to move full stack)"
+        )
         _validate_user_input(move_from)
-        cards_to_move = self.tableau_board.get_stack_of_revealed_cards(move_from, number_of_cards)
+        cards_to_move = self.tableau_board.get_stack_of_revealed_cards(
+            move_from, number_of_cards
+        )
         if not cards_to_move:
             raise ColumnInputError(move_from)
         move_to = self.input_handler.get_column("Enter the destination column")
@@ -223,7 +230,6 @@ class Game:
                 first_card_in_hand, coordinates=to_coordinates
             )
 
-
     def _draw_action(self) -> None:
         """Handles operations when draw action is selected by user."""
         if len(self.deck.cards) == 0 and self.hand.is_empty:
@@ -236,12 +242,14 @@ class Game:
 
     def _check_if_game_won(self) -> None:
         """Set game status to won if all cards are on foundations."""
-        total_on_foundations = sum([
-            len(self.foundation_board.spade_foundations),
-            len(self.foundation_board.heart_foundations),
-            len(self.foundation_board.club_foundations),
-            len(self.foundation_board.diamond_foundations),
-        ])
+        total_on_foundations = sum(
+            [
+                len(self.foundation_board.spade_foundations),
+                len(self.foundation_board.heart_foundations),
+                len(self.foundation_board.club_foundations),
+                len(self.foundation_board.diamond_foundations),
+            ]
+        )
         if total_on_foundations == 52:
             self.game_won = True
 
@@ -261,33 +269,49 @@ class Game:
 
         else:
             return False
-    
+
     def _clear_board(self) -> None:
         """Move all cards from tableau to foundations when all cards are revealed."""
         clear_board_confirmation = self.input_handler.get_clear_board_confirmation()
-        
+
         if clear_board_confirmation == "y":
             progress = True
             while progress and not self.game_won:
                 progress = False
                 for col in range(self.tableau_board.columns):
-                    last_card_coordinates = self.tableau_board.find_coordinates_of_last_card(col)
-                    last_card_coordinates = self.tableau_board.find_coordinates_of_last_card(col)
+                    last_card_coordinates = (
+                        self.tableau_board.find_coordinates_of_last_card(col)
+                    )
+                    last_card_coordinates = (
+                        self.tableau_board.find_coordinates_of_last_card(col)
+                    )
                     last_card_on_tableau = self.tableau_board.select_card_on_board(
                         last_card_coordinates
                     )
 
-                    if last_card_coordinates is None or not isinstance(last_card_on_tableau, Card):
+                    if last_card_coordinates is None or not isinstance(
+                        last_card_on_tableau, Card
+                    ):
                         continue
-                    last_card_on_foundations = self.foundation_board.check_last_card_on_foundations(
-                        last_card_on_tableau
+                    last_card_on_foundations = (
+                        self.foundation_board.check_last_card_on_foundations(
+                            last_card_on_tableau
+                        )
                     )
-                    can_move = can_move_to_foundations(last_card_on_tableau, last_card_on_foundations, self.config.rules["foundation"])
+                    can_move = can_move_to_foundations(
+                        last_card_on_tableau,
+                        last_card_on_foundations,
+                        self.config.rules["foundation"],
+                    )
 
                     if can_move:
-                        self.foundation_board.move_card_to_foundations(last_card_on_tableau)
+                        self.foundation_board.move_card_to_foundations(
+                            last_card_on_tableau
+                        )
                         self.tableau_board.remove_card_from_board(last_card_coordinates)
-                        reveal_coordinates = self.tableau_board.find_coordinates_of_last_card(col)
+                        reveal_coordinates = (
+                            self.tableau_board.find_coordinates_of_last_card(col)
+                        )
                         self.tableau_board.reveal_card_on_board(reveal_coordinates)
                         self.renderer.refresh(
                             self.tableau_board,
@@ -300,7 +324,6 @@ class Game:
                         progress = True
 
                 self._check_if_game_won()
-
 
     def refresh(self) -> None:
         self.renderer.refresh(
@@ -322,14 +345,23 @@ class Game:
 
     def _display_rules(self) -> None:
         with self.renderer.paused():
-                self.renderer.show_rules(GAME_RULES)
-                self.input_handler.wait_for_enter()
+            self.renderer.show_rules(GAME_RULES)
+            self.input_handler.wait_for_enter()
+
 
 def _validate_user_input(user_input: str | int) -> None:
     if isinstance(user_input, int) and user_input not in range(7):
         raise ColumnInputError(user_input)
-    elif isinstance(user_input, str) and user_input not in ["t", "f", "d", "h", "q", "r"]:
+    elif isinstance(user_input, str) and user_input not in [
+        "t",
+        "f",
+        "d",
+        "h",
+        "q",
+        "r",
+    ]:
         raise ActionInputError(user_input)
+
 
 class ActionInputError(Exception):
     def __init__(self, input: str):

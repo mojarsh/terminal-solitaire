@@ -8,20 +8,39 @@ from terminal_solitaire.game import Game
 from terminal_solitaire.input_handler import InputHandler
 from terminal_solitaire.renderer import Renderer
 
+
 class NoOpRenderer(Renderer):
-    def start(self) -> None: pass
-    def stop(self) -> None: pass
-    def refresh(self, *args, **kwargs) -> None: pass
-    def show_message(self, message: str) -> None: pass
-    def show_welcome(self, message: str) -> None: pass
-    def show_rules(self, rules: str) -> None: pass
-    def show_prompt(self, prompt: str) -> None: pass
-    def show_quit_message(self, message: str) -> None: pass
-    def show_win_message(self, message: str) -> None: pass
+    def start(self) -> None:
+        pass
+
+    def stop(self) -> None:
+        pass
+
+    def refresh(self, *args, **kwargs) -> None:
+        pass
+
+    def show_message(self, message: str) -> None:
+        pass
+
+    def show_welcome(self, message: str) -> None:
+        pass
+
+    def show_rules(self, rules: str) -> None:
+        pass
+
+    def show_prompt(self, prompt: str) -> None:
+        pass
+
+    def show_quit_message(self, message: str) -> None:
+        pass
+
+    def show_win_message(self, message: str) -> None:
+        pass
 
     @contextmanager
     def paused(self) -> Generator[None, None, None]:
         yield
+
 
 class StubInputHandler(InputHandler):
     def __init__(self, responses: list[str]) -> None:
@@ -30,10 +49,10 @@ class StubInputHandler(InputHandler):
         self._renderer = NoOpRenderer()
 
     def _next(self) -> str:
-            try:
-                return next(self._responses)
-            except StopIteration:
-                raise RuntimeError("StubInputHandler ran out of responses") from None
+        try:
+            return next(self._responses)
+        except StopIteration:
+            raise RuntimeError("StubInputHandler ran out of responses") from None
 
     def get_action(self) -> str:
         return next(self._responses)
@@ -52,7 +71,8 @@ class StubInputHandler(InputHandler):
         return next(self._responses)
 
     def wait_for_enter(self) -> str:
-        return "" # simulates user pressing enter
+        return ""  # simulates user pressing enter
+
 
 @pytest.fixture
 def game() -> Game:

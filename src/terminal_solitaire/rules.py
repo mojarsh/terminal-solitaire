@@ -4,15 +4,20 @@ from terminal_solitaire.deck import Card, Values
 
 type Rule = Callable[[Card, Card | None], bool]
 
-def can_move_to_foundations(card: Card, last_on_foundations: Card | None, rules: list[Rule]) -> bool:
+
+def can_move_to_foundations(
+    card: Card, last_on_foundations: Card | None, rules: list[Rule]
+) -> bool:
     return all(rule(card, last_on_foundations) for rule in rules)
 
+
 def same_suit_foundation_rule(
-        card_to_move: Card, card_at_destination: Card | None
+    card_to_move: Card, card_at_destination: Card | None
 ) -> bool:
     if card_at_destination is None:
         return True
     return card_to_move.suit == card_at_destination.suit
+
 
 def alternating_colour_rule(
     card_to_move: Card, card_at_destination: Card | None
@@ -82,4 +87,3 @@ class RuleBreakError(Exception):
     def __init__(self):
         self.message = "Invalid move, try another one!"
         super().__init__(self.message)
-

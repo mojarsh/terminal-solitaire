@@ -15,6 +15,7 @@ from terminal_solitaire.deck import EmptyDeckError
 
 # ── _draw_action ──────────────────────────────────────────────────────────────
 
+
 def test_draw_action_populates_hand(game: Game) -> None:
     game._draw_action()
     assert not game.hand.is_empty
@@ -33,7 +34,6 @@ def test_draw_action_reduces_deck(game: Game) -> None:
 
 def test_draw_action_cycles_hand_back_to_deck(game: Game) -> None:
     game._draw_action()
-    first_hand = [c.value + c.suit for c in game.hand.cards]
     deck_count_after_first_draw = len(game.deck.cards)
     game._draw_action()
     # hand cards should have been reinserted into deck
@@ -53,6 +53,7 @@ def test_draw_action_reveals_top_card_only(game: Game) -> None:
 
 
 # ── _hand_action ──────────────────────────────────────────────────────────────
+
 
 def test_hand_action_empty_hand_raises(game: Game) -> None:
     with pytest.raises(EmptyHandError):
@@ -76,6 +77,7 @@ def test_hand_action_to_foundations_invalid_raises(game: Game) -> None:
     with pytest.raises(RuleBreakError):
         game._hand_action()
 
+
 def test_hand_action_to_tableau_valid(game: Game) -> None:
     eight = Card(Suits.SPADES, Values.EIGHT, "Black", display_status=True)
     seven = Card(Suits.HEARTS, Values.SEVEN, "Red", display_status=True)
@@ -88,6 +90,7 @@ def test_hand_action_to_tableau_valid(game: Game) -> None:
     game._hand_action()
     new_count = sum(1 for _, _, v in game.tableau_board if isinstance(v, Card))
     assert new_count == initial_count + 1
+
 
 def test_hand_action_to_tableau_invalid_raises(game: Game) -> None:
     # an ace on a non-empty column that doesn't accept it should fail
@@ -142,11 +145,13 @@ def test_foundation_action_reveals_next_card(game: Game) -> None:
 
 # ── _tableau_action ───────────────────────────────────────────────────────────
 
+
 def test_tableau_action_invalid_move_raises(game: Game) -> None:
     # moving from a column onto itself should fail the rule check
     game.input_handler = StubInputHandler(["0", "1", "0"])
     with pytest.raises(RuleBreakError):
         game._tableau_action()
+
 
 def test_tableau_action_valid_move_updates_board(game: Game) -> None:
     seven = Card(Suits.HEARTS, Values.SEVEN, "Red", display_status=True)
@@ -156,9 +161,12 @@ def test_tableau_action_valid_move_updates_board(game: Game) -> None:
         game.tableau_board.remove_card_from_board((row, 1))
     game.tableau_board.place_card_on_board(seven, (0, 0))
     game.tableau_board.place_card_on_board(eight, (0, 1))
-    game.input_handler = StubInputHandler(["0", "", "1"])  # col, card count (full stack), dest
+    game.input_handler = StubInputHandler(
+        ["0", "", "1"]
+    )  # col, card count (full stack), dest
     game._tableau_action()
     assert game.tableau_board.find_coordinates_of_last_card(1) == (1, 1)
+
 
 def test_tableau_action_reveals_card_after_move(game: Game) -> None:
     hidden = Card(Suits.CLUBS, Values.NINE, "Black", display_status=False)
@@ -187,6 +195,7 @@ def test_tableau_action_empty_column_raises(game: Game) -> None:
 
 # ── _check_if_game_won ────────────────────────────────────────────────────────
 
+
 def test_game_not_won_initially(game: Game) -> None:
     assert game.game_won is False
 
@@ -207,6 +216,7 @@ def test_check_if_game_won_true_when_all_on_foundations(game: Game) -> None:
 
 
 # ── _apply_rules ──────────────────────────────────────────────────────────────
+
 
 def test_apply_rules_valid_foundation_ace(game: Game) -> None:
     ace = Card(Suits.HEARTS, Values.ACE, "Red", display_status=True)
@@ -239,6 +249,7 @@ def test_apply_rules_unknown_action_raises(game: Game) -> None:
 
 
 # ── _validate_user_input ──────────────────────────────────────────────────────
+
 
 def test_validate_valid_actions(game: Game) -> None:
     for action in ["t", "f", "d", "h", "q", "r"]:

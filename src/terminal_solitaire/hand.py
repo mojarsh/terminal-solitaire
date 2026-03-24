@@ -1,5 +1,6 @@
 from terminal_solitaire.deck import Card, Deck
 
+
 class Hand:
     def __init__(self) -> None:
         self._cards: list[Card] = []

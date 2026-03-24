@@ -14,7 +14,11 @@ dependencies = [
 terminal-solitaire = "terminal_solitaire.solitaire:main"
 
 [dependency-groups]
-dev = ["black>=24.8.0,<25"]
+dev = [
+    "black>=24.8.0,<25",
+    "mypy>=1.19.1",
+    "ruff>=0.15.7",
+]
 test = ["pytest>=8.3.3,<9", "coverage>=7.6.1,<8", "pytest-cov>=5.0,<6"]
 
 [tool.uv]

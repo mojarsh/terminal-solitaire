@@ -81,7 +81,9 @@ class Tableau(Board):
 
                 self.board[(row_index, idx + row_index)] = card
 
-    def get_first_card_coordinates(self, column_index: int, row_offset: int | None = None) -> tuple[int, int] | None:
+    def get_first_card_coordinates(
+        self, column_index: int, row_offset: int | None = None
+    ) -> tuple[int, int] | None:
 
         row_indices = [
             row
@@ -103,7 +105,9 @@ class Tableau(Board):
 
         return None
 
-    def get_stack_of_revealed_cards(self, column_index: int, row_index: int | None = None) -> dict[tuple[int, int], Card | str]:
+    def get_stack_of_revealed_cards(
+        self, column_index: int, row_index: int | None = None
+    ) -> dict[tuple[int, int], Card | str]:
         first_card = self.get_first_card_coordinates(column_index, row_index)
         last_card = self.find_coordinates_of_last_card(column_index)
         if first_card is None or last_card is None:
@@ -139,7 +143,9 @@ class Tableau(Board):
         else:
             return (last_card[0] + 1, column_index)
 
-    def select_card_on_board(self, coordinates: tuple[int, int] | None) -> Card | str | None:
+    def select_card_on_board(
+        self, coordinates: tuple[int, int] | None
+    ) -> Card | str | None:
         if coordinates is None:
             return None
         else:
@@ -176,5 +182,3 @@ def generate_foundations(rows: int, columns: int) -> Foundations:
         k: "  " for k in tuple(itertools.product(element_rows, element_columns))
     }
     return Foundations(board, rows, columns)
-
-

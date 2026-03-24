@@ -8,13 +8,16 @@ from terminal_solitaire.deck import (
     shuffle_deck,
 )
 
+
 @pytest.fixture
 def deck() -> Deck:
     return build_deck()
 
+
 @pytest.fixture
 def shuffled(deck: Deck) -> Deck:
     return shuffle_deck(deck)
+
 
 def test_deck_class_instance(deck: Deck) -> None:
     assert isinstance(deck, Deck)
@@ -39,7 +42,10 @@ def test_deck_is_correct_size(deck: Deck) -> None:
 
 
 def test_shuffled_deck_is_different(deck: Deck, shuffled: Deck) -> None:
-    assert [c.value + c.suit for c in deck.cards] != [c.value + c.suit for c in shuffled.cards]
+    assert [c.value + c.suit for c in deck.cards] != [
+        c.value + c.suit for c in shuffled.cards
+    ]
+
 
 def test_number_of_dealt_cards(shuffled: Deck) -> None:
     deal = shuffled.deal(7)
