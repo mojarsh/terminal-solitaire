@@ -145,7 +145,7 @@ class Game:
         last_card_on_tableau = self.tableau_board.select_card_on_board(
             last_card_coordinates
         )
-        if last_card_coordinates is None or last_card_on_tableau is None:
+        if last_card_coordinates is None or not isinstance(last_card_on_tableau, Card):
             raise ColumnInputError(move_from)
         last_card_on_foundations = self.foundation_board.check_last_card_on_foundations(
             last_card_on_tableau
@@ -179,9 +179,14 @@ class Game:
         card_at_destination = self.tableau_board.select_card_on_board(
             card_at_destination_coordinates
         )
+
         first_card = next(iter(cards_to_move.values()))
+        if not isinstance(first_card, Card) or not isinstance(card_at_destination, Card):
+            raise ColumnInputError(move_from)
         self._apply_rules(first_card, card_at_destination, "t")
         for coordinates, card in cards_to_move.items():
+            if not isinstance(card, Card):
+                raise ColumnInputError(move_from)
             to_coordinates = self.tableau_board.find_coordinates_of_next_space(move_to)
             self.tableau_board.remove_card_from_board(coordinates)
             self.tableau_board.place_card_on_board(card, coordinates=to_coordinates)
@@ -199,6 +204,8 @@ class Game:
 
         if hand_movement_input == "f":
             first_card_in_hand = self.hand.top()
+            if not isinstance(first_card_in_hand, Card):
+                raise EmptyHandError
             last_card_on_foundations = (
                 self.foundation_board.check_last_card_on_foundations(first_card_in_hand)
             )
@@ -219,6 +226,10 @@ class Game:
                 card_at_destination_coordinates
             )
             first_card_in_hand = self.hand.top()
+            if not isinstance(first_card_in_hand, Card):
+                raise EmptyHandError
+            if not isinstance(card_at_destination, Card):
+                raise ColumnInputError(move_to)
             self._apply_rules(
                 first_card_in_hand,
                 card_at_destination,
