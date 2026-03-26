@@ -179,13 +179,13 @@ class Game:
         card_at_destination = self.tableau_board.select_card_on_board(
             card_at_destination_coordinates
         )
-
         first_card = next(iter(cards_to_move.values()))
-        if not isinstance(first_card, Card) or not isinstance(
-            card_at_destination, Card
-        ):
+        if not isinstance(first_card, Card):
             raise ColumnInputError(move_from)
-        self._apply_rules(first_card, card_at_destination, "t")
+
+        destination = card_at_destination if isinstance(card_at_destination, Card) else None
+        self._apply_rules(first_card, destination, "t")
+
         for coordinates, card in cards_to_move.items():
             if not isinstance(card, Card):
                 raise ColumnInputError(move_from)
@@ -230,11 +230,10 @@ class Game:
             first_card_in_hand = self.hand.top()
             if not isinstance(first_card_in_hand, Card):
                 raise EmptyHandError
-            if not isinstance(card_at_destination, Card):
-                raise ColumnInputError(move_to)
+            destination = card_at_destination if isinstance(card_at_destination, Card) else None
             self._apply_rules(
                 first_card_in_hand,
-                card_at_destination,
+                destination,
                 hand_movement_input,
             )
             first_card_in_hand = self.hand.pop()
