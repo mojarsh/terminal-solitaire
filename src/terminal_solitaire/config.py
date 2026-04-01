@@ -1,3 +1,5 @@
+from platformdirs import PlatformDirs
+from pathlib import Path
 from dataclasses import dataclass, field
 from terminal_solitaire.rules import (
     Rule,
@@ -25,5 +27,8 @@ class GameConfig:
     draw_count: int = 3
     pass_limit: int | None = None
     allow_undo: bool = True
+    stats_path: Path = (
+        PlatformDirs("terminal-solitaire").user_config_path / "stats.json"
+    )
     seed: int | None = None
     rules: dict[str, list[Rule]] = field(default_factory=_default_rules)

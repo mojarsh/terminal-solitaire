@@ -77,6 +77,7 @@ def build_layout(
     hand_str: str,
     deck_count: int,
     seed: int | None,
+    elapsed_time: float,
     message: str = "",
     prompt: str = "Select an action (t/f/d/h/r/q)",
 ) -> Layout:
@@ -91,6 +92,7 @@ def build_layout(
     layout["tableau"].update(_build_tableau_panel(tableau))
     status = _build_hand_text(hand_str)
     status.append(f"  ·  Deck: {deck_count}")
+    status.append(f"  ·  Timer: {round(elapsed_time, 2)}")
     text_prompt = Text(prompt)
     if seed is not None:
         status.append(f"  ·  Seed: {seed}")
@@ -131,6 +133,7 @@ class Renderer:
         foundations: Foundations,
         hand_str: str,
         deck_count: int,
+        elapsed_time: float,
         seed: int | None = None,
     ) -> None:
         if self._live:
@@ -140,6 +143,7 @@ class Renderer:
                 hand_str,
                 deck_count,
                 seed,
+                elapsed_time,
                 self._message,
                 self._prompt,
             )

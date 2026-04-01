@@ -7,6 +7,7 @@ requires-python = "~=3.12.0"
 readme = "README.md"
 dependencies = [
     "blessed>=1.33.0",
+    "platformdirs>=4.3.6",
     "rich>=14.3.3",
 ]
 

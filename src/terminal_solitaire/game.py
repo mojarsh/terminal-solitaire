@@ -8,6 +8,7 @@ from terminal_solitaire.renderer import Renderer
 from terminal_solitaire.deck import Card, Deck, EmptyDeckError, shuffle_deck
 from terminal_solitaire.rules import RuleBreakError, can_move_to_foundations
 from terminal_solitaire.input_handler import InputHandler
+from terminal_solitaire.stats import create_or_update_stats_file
 
 WELCOME_MESSAGE = """
 Welcome to Terminal Solitaire! 
@@ -49,6 +50,8 @@ class Game:
         self.hand = Hand()
         self.deck = deck
         self.config = config
+        self.start_time = 0.0
+        self.elapsed_time = 0.0
         self.game_won = False
         self.actions = {
             "f": self._foundation_action,
@@ -76,12 +79,15 @@ class Game:
             else:
                 break
 
+        self.start_time = time.monotonic()
+        self.elapsed_time = time.monotonic() - self.start_time
         self.renderer.start()
         self.renderer.refresh(
             self.tableau_board,
             self.foundation_board,
             self.hand.display(),
             len(self.deck.cards),
+            self.elapsed_time,
             self.config.seed,
         )
 
@@ -91,16 +97,19 @@ class Game:
                 action_input = self.input_handler.get_action()
                 _validate_user_input(action_input)
                 self.actions[action_input]()
+                self.elapsed_time = time.monotonic() - self.start_time
                 self.renderer.refresh(
                     self.tableau_board,
                     self.foundation_board,
                     self.hand.display(),
                     len(self.deck.cards),
+                    self.elapsed_time,
                     self.config.seed,
                 )
                 if self._ready_to_clear_board:
                     self._clear_board()
 
+                self.elapsed_time = time.monotonic() - self.start_time
                 self._check_if_game_won()
 
             except (
@@ -117,6 +126,9 @@ class Game:
 
         self.renderer.stop()
         self.renderer.show_win_message("\nCongratulations, you won!")
+        create_or_update_stats_file(
+            self.config.stats_path, self.game_won, self.elapsed_time
+        )
 
     def _apply_rules(
         self, card_to_move: Card, card_at_destination: Card | None, action_input: str
@@ -183,7 +195,9 @@ class Game:
         if not isinstance(first_card, Card):
             raise ColumnInputError(move_from)
 
-        destination = card_at_destination if isinstance(card_at_destination, Card) else None
+        destination = (
+            card_at_destination if isinstance(card_at_destination, Card) else None
+        )
         self._apply_rules(first_card, destination, "t")
 
         for coordinates, card in cards_to_move.items():
@@ -230,7 +244,9 @@ class Game:
             first_card_in_hand = self.hand.top()
             if not isinstance(first_card_in_hand, Card):
                 raise EmptyHandError
-            destination = card_at_destination if isinstance(card_at_destination, Card) else None
+            destination = (
+                card_at_destination if isinstance(card_at_destination, Card) else None
+            )
             self._apply_rules(
                 first_card_in_hand,
                 destination,
@@ -330,6 +346,7 @@ class Game:
                             self.foundation_board,
                             self.hand.display(),
                             len(self.deck.cards),
+                            self.elapsed_time,
                             self.config.seed,
                         )
                         time.sleep(0.25)
@@ -343,6 +360,7 @@ class Game:
             self.foundation_board,
             self.hand.display(),
             len(self.deck.cards),
+            self.elapsed_time,
             self.config.seed,
         )
 
@@ -353,6 +371,9 @@ class Game:
         if user_sure == "y":
             self.renderer.stop()
             self.renderer.show_quit_message("\nBetter luck next time...")
+            create_or_update_stats_file(
+                self.config.stats_path, self.game_won, self.elapsed_time
+            )
             sys.exit(0)
 
     def _display_rules(self) -> None:

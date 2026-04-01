@@ -75,6 +75,16 @@ class StubInputHandler(InputHandler):
 
 
 @pytest.fixture
+def stats() -> dict:
+    return {
+        "games_played": 42,
+        "games_won": 30,
+        "fastest_win_seconds": 342.60,
+        "total_win_seconds": 4800.54,
+    }
+
+
+@pytest.fixture
 def game() -> Game:
     tableau = generate_tableau(20, 7)
     foundations = generate_foundations(1, 7)
